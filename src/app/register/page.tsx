@@ -1,0 +1,64 @@
+import { Box, Stack, TextField } from "@mui/material";
+
+const Register = () => {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh", // Full viewport height
+      }}
+    >
+      <Stack direction="row" spacing={4}>
+        {/* Left - Image */}
+        <Box sx={{ width: "50%" }}>
+          <img
+            src="https://via.placeholder.com/300" // Replace with your image URL
+            alt="Placeholder"
+            style={{ width: "100%", height: "auto", borderRadius: "8px" }}
+          />
+        </Box>
+
+        {/* Right - Form */}
+        <Box sx={{ width: "50%" }}>
+          <Stack direction="column" spacing={2}>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                id="outlined-basic"
+                label="First Name"
+                variant="outlined"
+              />
+              <TextField
+                id="outlined-basic"
+                label="Last Name"
+                variant="outlined"
+              />
+            </Stack>
+            <TextField id="outlined-basic" label="Email" variant="outlined" />
+            <TextField
+              size="small"
+              id="outlined-basic"
+              label="Mobile"
+              variant="outlined"
+            />
+            <TextField
+              id="outlined-basic"
+              label="Date Of Birth"
+              variant="outlined"
+            />
+            <TextField
+              id="outlined-basic"
+              label="District"
+              variant="outlined"
+            />
+            <TextField id="outlined-basic" label="City" variant="outlined" />
+            <TextField id="outlined-basic" label="Area" variant="outlined" />
+            <TextField id="outlined-basic" label="Address" variant="outlined" />
+          </Stack>
+        </Box>
+      </Stack>
+    </Box>
+  );
+};
+export default Register;

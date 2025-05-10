@@ -1,7 +1,7 @@
-const Page = ({ params }: { params: { slug: string } }) => {
+const Page = ({ params }: { params: { id: string } }) => {
   return (
     <div>
-      <h1>Product: {params.slug}</h1>
+      <h1>category {params.id}</h1>
       {/* Render product details */}
     </div>
   );

@@ -9,9 +9,13 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 
-const ProductCard = ({ blog }) => {
+const ProductCard = ({
+  blog,
+}: {
+  blog: { slug: string; title: string; description: string };
+}) => {
   return (
-    <Link href={`/Products/${blog.slug}`} passHref legacyBehavior>
+    <Link href={`/products/${blog.slug}`} passHref legacyBehavior>
       <Box
         component="a"
         sx={{
@@ -22,7 +26,10 @@ const ProductCard = ({ blog }) => {
           sx={{
             maxWidth: 345,
             cursor: "pointer",
-            "&:hover": { boxShadow: 6 },
+            boxShadow: 12,
+            p: 2,
+            borderRadius: 5,
+            "&:hover": { boxShadow: 24 },
           }}
         >
           <CardMedia

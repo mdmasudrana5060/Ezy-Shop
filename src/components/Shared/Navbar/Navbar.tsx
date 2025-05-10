@@ -1,9 +1,10 @@
-import { Box, Stack, Typography, Link } from "@mui/material";
+import { Box, Stack, Typography, Link, InputBase, alpha } from "@mui/material";
 import link from "next/link";
+import SearchIcon from "@mui/icons-material/Search";
 
 const Navbar = () => {
   return (
-    <Box sx={{ backgroundColor: "#f5f5f5", py: 1 }}>
+    <Box sx={{ backgroundColor: "#547792", p: 2 }}>
       <Stack
         direction="row"
         alignItems="center"
@@ -11,12 +12,49 @@ const Navbar = () => {
         px={2}
       >
         {/* Left - Company Name */}
-        <Typography variant="h6">EZY SHOP</Typography>
 
-        {/* Center - Search Box */}
+        <Typography
+          component={link}
+          style={{
+            textDecoration: "none",
+            color: "#FFFFFF",
+            fontWeight: "bold",
+          }}
+          variant="h5"
+          href="/"
+        >
+          EZY SHOP
+        </Typography>
+
         <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
           <Box sx={{ width: "50%" }}>
-            <Typography>Search Box</Typography>
+            <Box
+              sx={{
+                position: "relative",
+                borderRadius: "4px",
+                backgroundColor: alpha("#FFFFFF", 0.15),
+                "&:hover": {
+                  backgroundColor: alpha("#FFFFFF", 0.25),
+                },
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                px: 2,
+              }}
+            >
+              <SearchIcon sx={{ color: "#FFFFFF", mr: 1 }} />
+              <InputBase
+                placeholder="Search gadgets..."
+                sx={{
+                  color: "#FFFFFF",
+                  width: "100%",
+                  "::placeholder": {
+                    color: "#FFFFFF",
+                    opacity: 0.7,
+                  },
+                }}
+              />
+            </Box>
           </Box>
         </Box>
 
@@ -27,8 +65,9 @@ const Navbar = () => {
             component={link}
             sx={{
               fontWeight: "bold",
-              color: "blue",
-              ":hover": { color: "darkblue" },
+              color: "#FFFFFF",
+              transition: "all 0.3s ease",
+              ":hover": { color: "#F7AD45", fontSize: "1.1rem" },
             }}
             underline="none"
           >
@@ -39,8 +78,9 @@ const Navbar = () => {
             component={link}
             sx={{
               fontWeight: "bold",
-              color: "blue",
-              ":hover": { color: "darkblue" },
+              color: "#FFFFFF",
+              transition: "all 0.3s ease",
+              ":hover": { color: " #F7AD45", fontSize: "1.1rem" },
             }}
             underline="none"
           >
@@ -51,8 +91,9 @@ const Navbar = () => {
             component={link}
             sx={{
               fontWeight: "bold",
-              color: "blue",
-              ":hover": { color: "darkblue" },
+              color: "#FFFFFF",
+              transition: "all 0.3s ease",
+              ":hover": { color: "#F7AD45", fontSize: "1.1rem" },
             }}
             underline="none"
           >

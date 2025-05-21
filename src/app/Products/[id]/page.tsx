@@ -1,30 +1,120 @@
-import ProductCard from "@/components/ProductCard";
-import { Box } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import Image from "next/image";
 
-const Products = () => {
+const Page = ({ params }: { params: { id: string } }) => {
+  // Convert id from string to number
+  const productId = parseInt(params.id, 10);
+
+  // Find the product by id
+  const matchedProduct = products.find((product) => product.id === productId);
+
+  // If not found
+  if (!matchedProduct) {
+    return <div>Product not found</div>;
+  }
+
+  // Render the product
   return (
     <Box
-      display="grid"
-      gridTemplateColumns="repeat(3, 1fr)"
-      justifyContent="center"
-      justifyItems="center"
-      mx={2}
-      my={8}
-      gap={6}
+      m={8}
+      display="flex"
+      flexDirection="row"
+      justifyContent="space-around"
+      p={2}
+      bgcolor="grey.100"
     >
-      {products.map((product) => (
-        <Box
-          key={product.title}
-          width="100%" // Take full width of grid cell
-          height="100%"
+      <Stack mt={8}>
+        <Image
+          src={matchedProduct.image}
+          alt={matchedProduct.title}
+          width={300}
+          height={300}
+        />
+      </Stack>
+      <Stack mt={6} maxWidth="700px">
+        <Typography variant="h5" sx={{ color: "blue" }}>
+          {matchedProduct.title}
+        </Typography>
+        <Stack
+          direction="row"
+          spacing={2}
+          useFlexGap
+          sx={{ rowGap: 1 }}
+          flexWrap="wrap"
         >
-          <ProductCard product={product} />
-        </Box>
-      ))}
+          <Typography
+            sx={{
+              backgroundColor: "yellow",
+              padding: "4px 8px",
+              borderRadius: "20px",
+              fontWeight: 600,
+              color: "black",
+            }}
+          >
+            Price: {matchedProduct.price}
+          </Typography>
+          <Typography
+            sx={{
+              backgroundColor: "yellow",
+              padding: "4px 8px",
+              borderRadius: "20px",
+              fontWeight: 600,
+              color: "black",
+            }}
+          >
+            Regular Price: {matchedProduct.regular_price}
+          </Typography>
+          <Typography
+            sx={{
+              backgroundColor: "yellow",
+              padding: "4px 8px",
+              borderRadius: "20px",
+              fontWeight: 600,
+              color: "black",
+            }}
+          >
+            Regular Price: {matchedProduct.regular_price}
+          </Typography>
+          <Typography
+            sx={{
+              backgroundColor: "yellow",
+              padding: "4px 8px",
+              borderRadius: "20px",
+              fontWeight: 600,
+              color: "black",
+            }}
+          >
+            Stock: {matchedProduct.status}
+          </Typography>
+          <Typography
+            sx={{
+              backgroundColor: "yellow",
+              padding: "4px 8px",
+              borderRadius: "20px",
+              fontWeight: 600,
+              color: "black",
+            }}
+          >
+            Product Code: {matchedProduct.product_code}
+          </Typography>
+          <Typography
+            sx={{
+              backgroundColor: "yellow",
+              padding: "4px 8px",
+              borderRadius: "20px",
+              fontWeight: 600,
+              color: "black",
+            }}
+          >
+            Brand: {matchedProduct.brand}
+          </Typography>
+        </Stack>
+      </Stack>
     </Box>
   );
 };
-export default Products;
+
+export default Page;
 const products = [
   {
     id: 1716109200001,

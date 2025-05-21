@@ -1,10 +1,16 @@
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography, Box } from "@mui/material";
 import Link from "next/link";
 
 const CategoryCard = ({
   gadgetCategory,
 }: {
-  gadgetCategory: { id: string; icon: string; label: string };
+  gadgetCategory: {
+    id: number;
+    icon: string;
+    name: string;
+    iconSvg: string;
+    color: string;
+  };
 }) => {
   return (
     <Link
@@ -33,8 +39,19 @@ const CategoryCard = ({
         }}
       >
         <CardContent>
+          <Box
+            sx={{
+              mb: 1.5,
+              svg: {
+                color: gadgetCategory.color,
+                width: 32,
+                height: 32,
+              },
+            }}
+            dangerouslySetInnerHTML={{ __html: gadgetCategory.iconSvg }}
+          />
           <Typography variant="h6" color="text.primary">
-            {gadgetCategory.label}
+            {gadgetCategory.name}
           </Typography>
         </CardContent>
       </Card>

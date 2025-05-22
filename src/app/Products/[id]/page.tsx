@@ -1,19 +1,31 @@
-import { Box, Stack, Typography } from "@mui/material";
+"use client";
+import QuantityBox from "@/components/QuantiityBox";
+import { Box, Radio, Stack, Typography } from "@mui/material";
 import Image from "next/image";
+import { useState } from "react";
+
+const badgeStyle = {
+  backgroundColor: "yellow",
+  padding: "4px 8px",
+  borderRadius: "20px",
+  fontWeight: 600,
+  color: "black",
+};
 
 const Page = ({ params }: { params: { id: string } }) => {
-  // Convert id from string to number
-  const productId = parseInt(params.id, 10);
+  const [selectedOption, setSelectedOption] = useState<"cash" | "installment">(
+    "cash"
+  );
 
-  // Find the product by id
+  const productId = parseInt(params.id, 10);
   const matchedProduct = products.find((product) => product.id === productId);
 
-  // If not found
   if (!matchedProduct) {
     return <div>Product not found</div>;
   }
 
-  // Render the product
+  const monthlyInstallment = Math.ceil(matchedProduct.regular_price / 12);
+
   return (
     <Box
       m={8}
@@ -23,6 +35,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       p={2}
       bgcolor="grey.100"
     >
+      {/* Left image section */}
       <Stack mt={8}>
         <Image
           src={matchedProduct.image}
@@ -31,10 +44,13 @@ const Page = ({ params }: { params: { id: string } }) => {
           height={300}
         />
       </Stack>
+
+      {/* Right info section */}
       <Stack mt={6} maxWidth="700px">
         <Typography variant="h5" sx={{ color: "blue" }}>
           {matchedProduct.title}
         </Typography>
+
         <Stack
           direction="row"
           spacing={2}
@@ -42,79 +58,89 @@ const Page = ({ params }: { params: { id: string } }) => {
           sx={{ rowGap: 1 }}
           flexWrap="wrap"
         >
-          <Typography
-            sx={{
-              backgroundColor: "yellow",
-              padding: "4px 8px",
-              borderRadius: "20px",
-              fontWeight: 600,
-              color: "black",
-            }}
-          >
-            Price: {matchedProduct.price}
-          </Typography>
-          <Typography
-            sx={{
-              backgroundColor: "yellow",
-              padding: "4px 8px",
-              borderRadius: "20px",
-              fontWeight: 600,
-              color: "black",
-            }}
-          >
+          <Typography sx={badgeStyle}>Price: {matchedProduct.price}</Typography>
+          <Typography sx={badgeStyle}>
             Regular Price: {matchedProduct.regular_price}
           </Typography>
-          <Typography
-            sx={{
-              backgroundColor: "yellow",
-              padding: "4px 8px",
-              borderRadius: "20px",
-              fontWeight: 600,
-              color: "black",
-            }}
-          >
-            Regular Price: {matchedProduct.regular_price}
-          </Typography>
-          <Typography
-            sx={{
-              backgroundColor: "yellow",
-              padding: "4px 8px",
-              borderRadius: "20px",
-              fontWeight: 600,
-              color: "black",
-            }}
-          >
+          <Typography sx={badgeStyle}>
             Stock: {matchedProduct.status}
           </Typography>
-          <Typography
-            sx={{
-              backgroundColor: "yellow",
-              padding: "4px 8px",
-              borderRadius: "20px",
-              fontWeight: 600,
-              color: "black",
-            }}
-          >
+          <Typography sx={badgeStyle}>
             Product Code: {matchedProduct.product_code}
           </Typography>
-          <Typography
-            sx={{
-              backgroundColor: "yellow",
-              padding: "4px 8px",
-              borderRadius: "20px",
-              fontWeight: 600,
-              color: "black",
-            }}
-          >
-            Brand: {matchedProduct.brand}
-          </Typography>
+          <Typography sx={badgeStyle}>Brand: {matchedProduct.brand}</Typography>
         </Stack>
+
+        <Stack m={1}>
+          <Typography variant="h6" fontWeight={400} mt={1}>
+            Key Features:
+          </Typography>
+          <ul style={{ marginTop: 0, paddingLeft: "20px" }}>
+            {matchedProduct?.key_features?.map(
+              (feature: string, index: number) => (
+                <li key={index}>{feature}</li>
+              )
+            )}
+          </ul>
+        </Stack>
+
+        {/* Payment Options */}
+        <Stack m={1}>
+          <Typography fontWeight="bold">Payment Options</Typography>
+
+          <Box display="flex" flexDirection="row" gap={2} mt={1}>
+            {/* Cash Option */}
+            <Stack
+              p={2}
+              border="2px solid blue"
+              direction="row"
+              alignItems="flex-start"
+              sx={{ width: "fit-content", cursor: "pointer" }}
+              onClick={() => setSelectedOption("cash")}
+              gap={1}
+            >
+              <Radio checked={selectedOption === "cash"} />
+              <Box>
+                <Typography fontWeight="bold">
+                  {matchedProduct.price}
+                  <del style={{ marginLeft: 8 }}>
+                    {matchedProduct.regular_price}
+                  </del>
+                </Typography>
+                <Typography>Cash Discount Price</Typography>
+                <Typography>Online/Cash Payment</Typography>
+              </Box>
+            </Stack>
+
+            {/* Installment Option */}
+            <Stack
+              p={2}
+              border="2px solid blue"
+              direction="row"
+              alignItems="flex-start"
+              sx={{ width: "fit-content", cursor: "pointer" }}
+              onClick={() => setSelectedOption("installment")}
+              gap={1}
+            >
+              <Radio checked={selectedOption === "installment"} />
+              <Box>
+                <Typography fontWeight="bold">
+                  {monthlyInstallment}/month
+                </Typography>
+                <Typography>12-Month Installment</Typography>
+                <Typography>Monthly Payment Plan</Typography>
+              </Box>
+            </Stack>
+          </Box>
+        </Stack>
+        <QuantityBox></QuantityBox>
       </Stack>
     </Box>
   );
 };
 
 export default Page;
+
 const products = [
   {
     id: 1716109200001,

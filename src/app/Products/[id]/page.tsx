@@ -1,6 +1,15 @@
 "use client";
 import QuantityBox from "@/components/QuantiityBox";
-import { Box, Radio, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  Radio,
+  Stack,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -23,118 +32,297 @@ const Page = ({ params }: { params: { id: string } }) => {
   if (!matchedProduct) {
     return <div>Product not found</div>;
   }
-
+  const renderSpecs = (specs) => {
+    return Object.entries(specs).map(([section, values]) => (
+      <Box key={section} mb={2}>
+        <Typography
+          variant="subtitle1"
+          sx={{ fontWeight: "bold", color: "blue" }}
+        >
+          {section.replace(/_/g, " ").toUpperCase()}
+        </Typography>
+        {Object.entries(values).map(([key, value]) => (
+          <Typography key={key} sx={{ ml: 2 }}>
+            {key}: {value}
+          </Typography>
+        ))}
+      </Box>
+    ));
+  };
   const monthlyInstallment = Math.ceil(matchedProduct.regular_price / 12);
 
   return (
-    <Box
-      m={8}
-      display="flex"
-      flexDirection="row"
-      justifyContent="space-around"
-      p={2}
-      bgcolor="grey.100"
-    >
-      {/* Left image section */}
-      <Stack mt={8}>
-        <Image
-          src={matchedProduct.image}
-          alt={matchedProduct.title}
-          width={300}
-          height={300}
-        />
-      </Stack>
-
-      {/* Right info section */}
-      <Stack mt={6} maxWidth="700px">
-        <Typography variant="h5" sx={{ color: "blue" }}>
-          {matchedProduct.title}
-        </Typography>
-
-        <Stack
-          direction="row"
-          spacing={2}
-          useFlexGap
-          sx={{ rowGap: 1 }}
-          flexWrap="wrap"
-        >
-          <Typography sx={badgeStyle}>Price: {matchedProduct.price}</Typography>
-          <Typography sx={badgeStyle}>
-            Regular Price: {matchedProduct.regular_price}
-          </Typography>
-          <Typography sx={badgeStyle}>
-            Stock: {matchedProduct.status}
-          </Typography>
-          <Typography sx={badgeStyle}>
-            Product Code: {matchedProduct.product_code}
-          </Typography>
-          <Typography sx={badgeStyle}>Brand: {matchedProduct.brand}</Typography>
+    <Box>
+      <Box
+        m={8}
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-around"
+        p={2}
+        bgcolor="grey.100"
+      >
+        {/* Left image section */}
+        <Stack mt={8}>
+          <Image
+            src={matchedProduct.image}
+            alt={matchedProduct.title}
+            width={300}
+            height={300}
+          />
         </Stack>
 
-        <Stack m={1}>
-          <Typography variant="h6" fontWeight={400} mt={1}>
-            Key Features:
+        {/* Right info section */}
+        <Stack mt={6} maxWidth="700px">
+          <Typography variant="h5" sx={{ color: "blue" }}>
+            {matchedProduct.title}
           </Typography>
-          <ul style={{ marginTop: 0, paddingLeft: "20px" }}>
-            {matchedProduct?.key_features?.map(
-              (feature: string, index: number) => (
-                <li key={index}>{feature}</li>
-              )
+
+          <Stack
+            direction="row"
+            spacing={2}
+            useFlexGap
+            sx={{ rowGap: 1 }}
+            flexWrap="wrap"
+          >
+            <Typography sx={badgeStyle}>
+              Price: {matchedProduct.price}
+            </Typography>
+            <Typography sx={badgeStyle}>
+              Regular Price: {matchedProduct.regular_price}
+            </Typography>
+            <Typography sx={badgeStyle}>
+              Stock: {matchedProduct.status}
+            </Typography>
+            <Typography sx={badgeStyle}>
+              Product Code: {matchedProduct.product_code}
+            </Typography>
+            <Typography sx={badgeStyle}>
+              Brand: {matchedProduct.brand}
+            </Typography>
+          </Stack>
+
+          <Stack m={1}>
+            <Typography variant="h6" fontWeight={400} mt={1}>
+              Key Features:
+            </Typography>
+            <ul style={{ marginTop: 0, paddingLeft: "20px" }}>
+              {matchedProduct?.key_features?.map(
+                (feature: string, index: number) => (
+                  <li key={index}>{feature}</li>
+                )
+              )}
+            </ul>
+          </Stack>
+
+          {/* Payment Options */}
+          <Stack m={1}>
+            <Typography fontWeight="bold">Payment Options</Typography>
+
+            <Box display="flex" flexDirection="row" gap={2} mt={1}>
+              {/* Cash Option */}
+              <Stack
+                p={2}
+                border="2px solid blue"
+                direction="row"
+                alignItems="flex-start"
+                sx={{ width: "fit-content", cursor: "pointer" }}
+                onClick={() => setSelectedOption("cash")}
+                gap={1}
+              >
+                <Radio checked={selectedOption === "cash"} />
+                <Box>
+                  <Typography fontWeight="bold">
+                    {matchedProduct.price}
+                    <del style={{ marginLeft: 8 }}>
+                      {matchedProduct.regular_price}
+                    </del>
+                  </Typography>
+                  <Typography>Cash Discount Price</Typography>
+                  <Typography>Online/Cash Payment</Typography>
+                </Box>
+              </Stack>
+
+              {/* Installment Option */}
+              <Stack
+                p={2}
+                border="2px solid blue"
+                direction="row"
+                alignItems="flex-start"
+                sx={{ width: "fit-content", cursor: "pointer" }}
+                onClick={() => setSelectedOption("installment")}
+                gap={1}
+              >
+                <Radio checked={selectedOption === "installment"} />
+                <Box>
+                  <Typography fontWeight="bold">
+                    {monthlyInstallment}/month
+                  </Typography>
+                  <Typography>12-Month Installment</Typography>
+                  <Typography>Monthly Payment Plan</Typography>
+                </Box>
+              </Stack>
+            </Box>
+          </Stack>
+          <QuantityBox product={matchedProduct}></QuantityBox>
+        </Stack>
+      </Box>
+      <Box sx={{ flexGrow: 1, padding: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper
+              elevation={16}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#FF7F50",
+                color: "Black",
+                borderRadius: 2,
+                p: 2,
+                cursor: "pointer",
+              }}
+            >
+              <Typography variant="h6">Specification</Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper
+              elevation={16}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#FFFFFF",
+                color: "Black",
+                borderRadius: 2,
+                p: 2,
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "#FF7F50",
+                  color: "white",
+                },
+              }}
+            >
+              <Typography variant="h6">Description</Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper
+              elevation={16}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#FFFFFF",
+                color: "Black",
+                borderRadius: 2,
+                p: 2,
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "#FF7F50",
+                  color: "white",
+                },
+              }}
+            >
+              <Typography variant="h6">
+                Question {matchedProduct?.question?.length || 0}
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper
+              elevation={16}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#FFFFFF",
+                color: "Black",
+                borderRadius: 2,
+                p: 2,
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "#FF7F50",
+                  color: "white",
+                },
+              }}
+            >
+              <Typography variant="h6">
+                Reviews {matchedProduct?.reviews?.length || 0}
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={9}>
+          <Paper elevation={3} sx={{ p: 3 }}>
+            <Typography variant="h6" fontWeight={"bold"} gutterBottom>
+              Specification
+            </Typography>
+            {renderSpecs(matchedProduct.specification)}
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="h6" fontWeight={"bold"} gutterBottom>
+              Description
+            </Typography>
+            <Typography variant="body1" mb={3}>
+              {matchedProduct.description}
+            </Typography>
+
+            <Divider sx={{ mb: 2 }} />
+
+            {matchedProduct?.question &&
+              matchedProduct?.question.length > 0 && (
+                <>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="h6">Customer Questions</Typography>
+                  {matchedProduct?.question.map((q, index) => (
+                    <Box key={index} mb={2}>
+                      <Typography>
+                        <strong>Q:</strong> {q.question}
+                      </Typography>
+                      <Typography>
+                        <strong>A:</strong> {q.answer}
+                      </Typography>
+                    </Box>
+                  ))}
+                </>
+              )}
+
+            {matchedProduct?.reviews && matchedProduct?.reviews.length > 0 && (
+              <>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6">
+                  Reviews ({matchedProduct?.reviews.length})
+                </Typography>
+                {matchedProduct?.reviews.map((r, index) => (
+                  <Box key={index} mb={2}>
+                    <Typography>
+                      <strong>{r.user}</strong> rated {r.rating}/5
+                    </Typography>
+                    <Typography>{r.comment}</Typography>
+                  </Box>
+                ))}
+              </>
             )}
-          </ul>
-        </Stack>
+          </Paper>
+        </Grid>
 
-        {/* Payment Options */}
-        <Stack m={1}>
-          <Typography fontWeight="bold">Payment Options</Typography>
-
-          <Box display="flex" flexDirection="row" gap={2} mt={1}>
-            {/* Cash Option */}
-            <Stack
-              p={2}
-              border="2px solid blue"
-              direction="row"
-              alignItems="flex-start"
-              sx={{ width: "fit-content", cursor: "pointer" }}
-              onClick={() => setSelectedOption("cash")}
-              gap={1}
-            >
-              <Radio checked={selectedOption === "cash"} />
-              <Box>
-                <Typography fontWeight="bold">
-                  {matchedProduct.price}
-                  <del style={{ marginLeft: 8 }}>
-                    {matchedProduct.regular_price}
-                  </del>
-                </Typography>
-                <Typography>Cash Discount Price</Typography>
-                <Typography>Online/Cash Payment</Typography>
-              </Box>
-            </Stack>
-
-            {/* Installment Option */}
-            <Stack
-              p={2}
-              border="2px solid blue"
-              direction="row"
-              alignItems="flex-start"
-              sx={{ width: "fit-content", cursor: "pointer" }}
-              onClick={() => setSelectedOption("installment")}
-              gap={1}
-            >
-              <Radio checked={selectedOption === "installment"} />
-              <Box>
-                <Typography fontWeight="bold">
-                  {monthlyInstallment}/month
-                </Typography>
-                <Typography>12-Month Installment</Typography>
-                <Typography>Monthly Payment Plan</Typography>
-              </Box>
-            </Stack>
-          </Box>
-        </Stack>
-        <QuantityBox></QuantityBox>
-      </Stack>
+        {/* Right Side Action Button */}
+        <Grid item xs={12} md={3}>
+          <Paper elevation={2} sx={{ p: 2, textAlign: "center" }}>
+            <Typography variant="subtitle1" gutterBottom>
+              Have a Question or Feedback?
+            </Typography>
+            <Button variant="contained" color="primary" fullWidth>
+              Ask Question / Write Review
+            </Button>
+          </Paper>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

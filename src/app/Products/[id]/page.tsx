@@ -1,4 +1,5 @@
 "use client";
+
 import QuantityBox from "@/components/QuantiityBox";
 import {
   Box,
@@ -13,6 +14,7 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 
+/* ----------------------- small helpers ----------------------- */
 const badgeStyle = {
   backgroundColor: "yellow",
   padding: "4px 8px",
@@ -21,47 +23,46 @@ const badgeStyle = {
   color: "black",
 };
 
+const renderSpecs = (specs: Record<string, Record<string, string>>) =>
+  Object.entries(specs).map(([section, values]) => (
+    <Box key={section} mb={2}>
+      <Typography
+        variant="subtitle1"
+        sx={{ fontWeight: "bold", color: "blue" }}
+      >
+        {section.replace(/_/g, " ").toUpperCase()}
+      </Typography>
+      {Object.entries(values).map(([k, v]) => (
+        <Typography key={k} sx={{ ml: 2 }}>
+          {k}: {v}
+        </Typography>
+      ))}
+    </Box>
+  ));
+
+/* ----------------------- main page ----------------------- */
 const Page = ({ params }: { params: { id: string } }) => {
   const [selectedOption, setSelectedOption] = useState<"cash" | "installment">(
     "cash"
   );
 
   const productId = parseInt(params.id, 10);
-  const matchedProduct = products.find((product) => product.id === productId);
+  const matchedProduct = products.find((p) => p.id === productId);
 
-  if (!matchedProduct) {
-    return <div>Product not found</div>;
-  }
-  const renderSpecs = (specs) => {
-    return Object.entries(specs).map(([section, values]) => (
-      <Box key={section} mb={2}>
-        <Typography
-          variant="subtitle1"
-          sx={{ fontWeight: "bold", color: "blue" }}
-        >
-          {section.replace(/_/g, " ").toUpperCase()}
-        </Typography>
-        {Object.entries(values).map(([key, value]) => (
-          <Typography key={key} sx={{ ml: 2 }}>
-            {key}: {value}
-          </Typography>
-        ))}
-      </Box>
-    ));
-  };
+  if (!matchedProduct) return <div>Product not found</div>;
+
   const monthlyInstallment = Math.ceil(matchedProduct.regular_price / 12);
 
   return (
     <Box>
+      {/* ---------- Hero / price section ---------- */}
       <Box
         m={8}
         display="flex"
-        flexDirection="row"
         justifyContent="space-around"
         p={2}
         bgcolor="grey.100"
       >
-        {/* Left image section */}
         <Stack mt={8}>
           <Image
             src={matchedProduct.image}
@@ -71,19 +72,12 @@ const Page = ({ params }: { params: { id: string } }) => {
           />
         </Stack>
 
-        {/* Right info section */}
         <Stack mt={6} maxWidth="700px">
           <Typography variant="h5" sx={{ color: "blue" }}>
             {matchedProduct.title}
           </Typography>
 
-          <Stack
-            direction="row"
-            spacing={2}
-            useFlexGap
-            sx={{ rowGap: 1 }}
-            flexWrap="wrap"
-          >
+          <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ rowGap: 1 }}>
             <Typography sx={badgeStyle}>
               Price: {matchedProduct.price}
             </Typography>
@@ -105,27 +99,23 @@ const Page = ({ params }: { params: { id: string } }) => {
             <Typography variant="h6" fontWeight={400} mt={1}>
               Key Features:
             </Typography>
-            <ul style={{ marginTop: 0, paddingLeft: "20px" }}>
-              {matchedProduct?.key_features?.map(
-                (feature: string, index: number) => (
-                  <li key={index}>{feature}</li>
-                )
-              )}
+            <ul style={{ marginTop: 0, paddingLeft: 20 }}>
+              {matchedProduct.key_features.map((f, i) => (
+                <li key={i}>{f}</li>
+              ))}
             </ul>
           </Stack>
 
-          {/* Payment Options */}
+          {/* Payment options */}
           <Stack m={1}>
             <Typography fontWeight="bold">Payment Options</Typography>
-
-            <Box display="flex" flexDirection="row" gap={2} mt={1}>
-              {/* Cash Option */}
+            <Box display="flex" gap={2} mt={1}>
+              {/* cash */}
               <Stack
                 p={2}
                 border="2px solid blue"
                 direction="row"
-                alignItems="flex-start"
-                sx={{ width: "fit-content", cursor: "pointer" }}
+                sx={{ cursor: "pointer" }}
                 onClick={() => setSelectedOption("cash")}
                 gap={1}
               >
@@ -142,13 +132,12 @@ const Page = ({ params }: { params: { id: string } }) => {
                 </Box>
               </Stack>
 
-              {/* Installment Option */}
+              {/* installment */}
               <Stack
                 p={2}
                 border="2px solid blue"
                 direction="row"
-                alignItems="flex-start"
-                sx={{ width: "fit-content", cursor: "pointer" }}
+                sx={{ cursor: "pointer" }}
                 onClick={() => setSelectedOption("installment")}
                 gap={1}
               >
@@ -163,163 +152,201 @@ const Page = ({ params }: { params: { id: string } }) => {
               </Stack>
             </Box>
           </Stack>
-          <QuantityBox product={matchedProduct}></QuantityBox>
+
+          <QuantityBox product={matchedProduct} />
         </Stack>
       </Box>
-      <Box sx={{ flexGrow: 1, padding: 2 }}>
+
+      {/* ---------- quick nav chips ---------- */}
+      <Box sx={{ flexGrow: 1, p: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper
-              elevation={16}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#FF7F50",
-                color: "Black",
-                borderRadius: 2,
-                p: 2,
-                cursor: "pointer",
-              }}
-            >
-              <Typography variant="h6">Specification</Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper
-              elevation={16}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#FFFFFF",
-                color: "Black",
-                borderRadius: 2,
-                p: 2,
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#FF7F50",
-                  color: "white",
-                },
-              }}
-            >
-              <Typography variant="h6">Description</Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper
-              elevation={16}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#FFFFFF",
-                color: "Black",
-                borderRadius: 2,
-                p: 2,
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#FF7F50",
-                  color: "white",
-                },
-              }}
-            >
-              <Typography variant="h6">
-                Question {matchedProduct?.question?.length || 0}
-              </Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper
-              elevation={16}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#FFFFFF",
-                color: "Black",
-                borderRadius: 2,
-                p: 2,
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#FF7F50",
-                  color: "white",
-                },
-              }}
-            >
-              <Typography variant="h6">
-                Reviews {matchedProduct?.reviews?.length || 0}
-              </Typography>
-            </Paper>
-          </Grid>
+          {[
+            { label: "Specification", count: null },
+            { label: "Description", count: null },
+            { label: "Question", count: matchedProduct.question?.length || 0 },
+            { label: "Reviews", count: matchedProduct.reviews?.length || 0 },
+          ].map((chip, i) => (
+            <Grid key={i} item xs={12} sm={6} md={3}>
+              <Paper
+                elevation={16}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  bgcolor: i === 0 ? "#FF7F50" : "#FFFFFF",
+                  color: "black",
+                  borderRadius: 2,
+                  p: 2,
+                  cursor: "pointer",
+                  "&:hover": { bgcolor: "#FF7F50", color: "white" },
+                }}
+              >
+                <Typography variant="h6">
+                  {chip.label}
+                  {chip.count !== null && ` ${chip.count}`}
+                </Typography>
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
       </Box>
+
+      {/* ---------- unified detail cards ---------- */}
       <Grid container spacing={4}>
         <Grid item xs={12} md={9}>
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={"bold"} gutterBottom>
+          {/* Specification */}
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              mb: 3,
+              border: "1px solid #ddd",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
               Specification
             </Typography>
-            {renderSpecs(matchedProduct.specification)}
-            <Divider sx={{ mb: 2 }} />
-            <Typography variant="h6" fontWeight={"bold"} gutterBottom>
+            {renderSpecs(matchedProduct?.specification)}
+          </Paper>
+
+          {/* Description */}
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              mb: 3,
+              border: "1px solid #ddd",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
               Description
             </Typography>
-            <Typography variant="body1" mb={3}>
+            <Typography variant="body1">
               {matchedProduct.description}
             </Typography>
+          </Paper>
 
-            <Divider sx={{ mb: 2 }} />
+          {/* Questions */}
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              mb: 8,
+              border: "1px solid #ddd",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                Questions ({matchedProduct.question?.length || 0})
+              </Typography>
+              <Button
+                variant="contained"
+                size="small"
+                sx={{ backgroundColor: "#FF7F50", p: 1, borderRadius: 10 }}
+              >
+                Ask Question
+              </Button>
+            </Box>
 
-            {matchedProduct?.question &&
-              matchedProduct?.question.length > 0 && (
-                <>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="h6">Customer Questions</Typography>
-                  {matchedProduct?.question.map((q, index) => (
-                    <Box key={index} mb={2}>
-                      <Typography>
-                        <strong>Q:</strong> {q.question}
-                      </Typography>
-                      <Typography>
-                        <strong>A:</strong> {q.answer}
-                      </Typography>
-                    </Box>
-                  ))}
-                </>
-              )}
-
-            {matchedProduct?.reviews && matchedProduct?.reviews.length > 0 && (
-              <>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="h6">
-                  Reviews ({matchedProduct?.reviews.length})
-                </Typography>
-                {matchedProduct?.reviews.map((r, index) => (
-                  <Box key={index} mb={2}>
-                    <Typography>
-                      <strong>{r.user}</strong> rated {r.rating}/5
-                    </Typography>
-                    <Typography>{r.comment}</Typography>
-                  </Box>
-                ))}
-              </>
+            {matchedProduct.question && matchedProduct.question.length > 0 ? (
+              matchedProduct.question.map((q, idx) => (
+                <Box
+                  key={idx}
+                  mb={1}
+                  p={1}
+                  sx={{ bgcolor: "#fafafa", borderRadius: 1 }}
+                >
+                  <Typography>
+                    <strong>Q:</strong> {q.question}
+                  </Typography>
+                  <Typography>
+                    <strong>A:</strong> {q.answer || "No answer yet."}
+                  </Typography>
+                </Box>
+              ))
+            ) : (
+              <Stack
+                sx={{
+                  minHeight: 80,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  bgcolor: "#fff",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography color="textSecondary">No questions yet.</Typography>
+              </Stack>
             )}
           </Paper>
-        </Grid>
 
-        {/* Right Side Action Button */}
-        <Grid item xs={12} md={3}>
-          <Paper elevation={2} sx={{ p: 2, textAlign: "center" }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Have a Question or Feedback?
-            </Typography>
-            <Button variant="contained" color="primary" fullWidth>
-              Ask Question / Write Review
-            </Button>
+          {/* Reviews */}
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              mb: 3,
+              border: "1px solid #ddd",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                Reviews ({matchedProduct.reviews?.length || 0})
+              </Typography>
+              <Button
+                variant="contained"
+                size="small"
+                sx={{ backgroundColor: "#FF7F50", p: 1, borderRadius: 10 }}
+              >
+                Write Review
+              </Button>
+            </Box>
+
+            {matchedProduct.reviews && matchedProduct.reviews.length > 0 ? (
+              matchedProduct.reviews.map((r, idx) => (
+                <Box
+                  key={idx}
+                  mb={1}
+                  p={1}
+                  sx={{ bgcolor: "#fafafa", borderRadius: 1 }}
+                >
+                  <Typography>
+                    <strong>{r.user}</strong> rated {r.rating}/5
+                  </Typography>
+                  <Typography>{r.comment}</Typography>
+                </Box>
+              ))
+            ) : (
+              <Stack
+                sx={{
+                  minHeight: 80,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  bgcolor: "#fff",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography color="textSecondary">No reviews yet.</Typography>
+              </Stack>
+            )}
           </Paper>
         </Grid>
       </Grid>

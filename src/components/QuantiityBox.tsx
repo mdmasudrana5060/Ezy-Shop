@@ -87,6 +87,7 @@ const QuantityBox = ({ product }) => {
           Buy Now
         </Button>
       </Box>
+
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle fontWeight="bold">Order Summary</DialogTitle>
         <DialogContent dividers>

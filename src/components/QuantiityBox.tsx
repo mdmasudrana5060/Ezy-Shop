@@ -1,23 +1,14 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  IconButton,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Divider,
-  DialogActions,
-  Stack,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, IconButton, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
+import Link from "next/link";
+
 const QuantityBox = ({ product }) => {
+  console.log(product.title);
   const [quantity, setQuantity] = useState(1);
-  const [open, setOpen] = useState(false);
+
   const handleIncrement = () => setQuantity((q) => q + 1);
   const handleDecrement = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
@@ -73,65 +64,32 @@ const QuantityBox = ({ product }) => {
             </IconButton>
           </Box>
         </Box>
-        <Button
-          onClick={() => setOpen(true)}
-          sx={{
-            backgroundColor: "blue",
-            color: "white",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-            px: 2,
-            fontWeight: "bold",
+        <Link
+          href={{
+            pathname: "/orderCard",
+            query: {
+              name: product.title,
+              price: product.price,
+              quantity: quantity,
+            },
           }}
+          passHref
+          legacyBehavior
         >
-          Buy Now
-        </Button>
-      </Box>
-
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle fontWeight="bold">Order Summary</DialogTitle>
-        <DialogContent dividers>
-          <Box display="flex" justifyContent="space-between" gap={2}>
-            {/* Left side - single message box */}
-            <Paper elevation={2} sx={{ p: 2, width: "60%" }}>
-              <Typography>
-                You have added{" "}
-                <span style={{ color: "red" }}>{product.title}</span> to your
-                shopping cart!
-              </Typography>
-            </Paper>
-
-            {/* Right side - stacked small boxes */}
-            <Stack spacing={1} sx={{ width: "35%" }}>
-              <Paper elevation={1} sx={{ p: 1 }}>
-                <Typography>Quantity: {quantity}</Typography>
-              </Paper>
-              <Paper elevation={1} sx={{ p: 1 }}>
-                <Typography>Price: ${product.regular_price}</Typography>
-              </Paper>
-              <Paper elevation={1} sx={{ p: 1 }}>
-                <Typography fontWeight="bold">
-                  Total: ${quantity * product.regular_price}
-                </Typography>
-              </Paper>
-            </Stack>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)} color="inherit">
-            Cancel
-          </Button>
           <Button
-            onClick={() => {
-              alert("Order Confirmed!");
-              setOpen(false);
+            sx={{
+              backgroundColor: "blue",
+              color: "white",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              px: 2,
+              fontWeight: "bold",
             }}
-            variant="contained"
           >
-            Confirm Order
+            Buy Now
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Link>
+      </Box>
     </>
   );
 };

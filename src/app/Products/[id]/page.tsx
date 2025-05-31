@@ -4,7 +4,6 @@ import QuantityBox from "@/components/QuantiityBox";
 import {
   Box,
   Button,
-  Divider,
   Grid,
   Paper,
   Radio,
@@ -123,8 +122,10 @@ const Page = ({ params }: { params: { id: string } }) => {
                 <Box>
                   <Typography fontWeight="bold">
                     {matchedProduct.price}
+                    <span style={{ color: "red", fontWeight: 600 }}>৳</span>
                     <del style={{ marginLeft: 8 }}>
                       {matchedProduct.regular_price}
+                      <span style={{ color: "red", fontWeight: 600 }}>৳</span>
                     </del>
                   </Typography>
                   <Typography>Cash Discount Price</Typography>
@@ -144,7 +145,9 @@ const Page = ({ params }: { params: { id: string } }) => {
                 <Radio checked={selectedOption === "installment"} />
                 <Box>
                   <Typography fontWeight="bold">
-                    {monthlyInstallment}/month
+                    {monthlyInstallment}
+                    <span style={{ color: "red", fontWeight: 600 }}>৳</span>
+                    /month
                   </Typography>
                   <Typography>12-Month Installment</Typography>
                   <Typography>Monthly Payment Plan</Typography>
@@ -158,8 +161,16 @@ const Page = ({ params }: { params: { id: string } }) => {
       </Box>
 
       {/* ---------- quick nav chips ---------- */}
-      <Box sx={{ flexGrow: 1, p: 2 }}>
-        <Grid container spacing={2}>
+
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: { md: "74%" },
+          mx: 1,
+          my: 2,
+        }}
+      >
+        <Grid container spacing={4}>
           {[
             { label: "Specification", count: null },
             { label: "Description", count: null },

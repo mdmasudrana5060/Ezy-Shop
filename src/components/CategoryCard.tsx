@@ -14,7 +14,12 @@ const CategoryCard = ({
 }) => {
   return (
     <Link
-      href={`/featuredCategory/${gadgetCategory.id}`}
+      href={{
+        pathname: "/featuredCategory/featuredCategory.id",
+        query: {
+          name: gadgetCategory.name,
+        },
+      }}
       passHref
       legacyBehavior
     >

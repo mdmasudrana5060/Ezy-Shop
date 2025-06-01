@@ -6,6 +6,7 @@ import {
   Checkbox,
   Divider,
   FormControlLabel,
+  FormGroup,
   Grid,
   Paper,
   Slider,
@@ -15,13 +16,14 @@ import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 const CategoryPage = () => {
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const searchParams = useSearchParams();
   const categoryName = searchParams.get("name") ?? "Unknown";
 
   const filteredProducts = products.filter(
     (product) => product.category.toLowerCase() === categoryName.toLowerCase()
   );
-  console.log(filteredProducts);
+
   const prices = useMemo(
     () => filteredProducts.map((p) => p.price),
     [filteredProducts]
@@ -39,13 +41,21 @@ const CategoryPage = () => {
     setPriceRange(newValue as number[]);
   };
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.checked,
-    }));
+    const { name, checked } = e.target;
+
+    setFilters({
+      inStock: name === "inStock" ? checked : false,
+      outOfStock: name === "outOfStock" ? checked : false,
+    });
   };
   const normalizeStatus = (status: string) => status.trim().toLowerCase();
-
+  const uniqueBrands = [...new Set(filteredProducts.map((p) => p.brand))];
+  const handleBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const brand = e.target.name;
+    setSelectedBrands((prev) =>
+      e.target.checked ? [...prev, brand] : prev.filter((b) => b !== brand)
+    );
+  };
   const filteredProducts2 = filteredProducts.filter((product) => {
     const status = normalizeStatus(product.status);
     if (filters.inStock && !filters.outOfStock) return status === "in stock";
@@ -54,10 +64,15 @@ const CategoryPage = () => {
     if (filters.inStock && filters.outOfStock) return true;
     return true; // No filters
   });
-  console.log(filteredProducts2);
 
-  const inStockCount = products.filter((p) => p.status).length;
-  const outOfStockCount = products.filter((p) => !p.status).length;
+  const inStockCount = filteredProducts.filter((p) => p.status).length;
+  const outOfStockCount = filteredProducts.filter((p) => !p.status).length;
+  const filteredProducts3 = filteredProducts2.filter((product) =>
+    selectedBrands.length === 0 ? true : selectedBrands.includes(product.brand)
+  );
+  const finalFilteredProducts = filteredProducts3.filter(
+    (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
+  );
   return (
     <Box sx={{ p: 2, backgroundColor: "#f0f2f5" }}>
       <Grid container spacing={3}>
@@ -90,41 +105,70 @@ const CategoryPage = () => {
             <Typography gutterBottom fontWeight={600}>
               Availability
             </Typography>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="inStock"
-                  checked={filters.inStock}
-                  onChange={handleCheckbox}
-                  sx={{
-                    color: "#FF7F50",
-                    "&.Mui-checked": { color: "#FF7F50" },
-                  }}
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="inStock"
+                    checked={filters.inStock}
+                    onChange={handleCheckbox}
+                    sx={{
+                      color: "#FF7F50",
+                      "&.Mui-checked": { color: "#FF7F50" },
+                    }}
+                  />
+                }
+                label={`In Stock (${inStockCount})`}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="outOfStock"
+                    checked={filters.outOfStock}
+                    onChange={handleCheckbox}
+                    sx={{
+                      color: "#FF7F50",
+                      "&.Mui-checked": { color: "#FF7F50" },
+                    }}
+                  />
+                }
+                label={`Out of Stock (${outOfStockCount})`}
+              />
+            </FormGroup>
+          </Paper>
+          <Paper
+            elevation={6}
+            sx={{ p: 2, bgcolor: "white", borderRadius: "10px", m: 1 }}
+          >
+            <Typography gutterBottom fontWeight={600}>
+              Brands
+            </Typography>
+            <FormGroup>
+              {uniqueBrands.map((brand) => (
+                <FormControlLabel
+                  key={brand}
+                  control={
+                    <Checkbox
+                      name={brand}
+                      checked={selectedBrands.includes(brand)}
+                      onChange={handleBrandChange}
+                      sx={{
+                        color: "#FF7F50",
+                        "&.Mui-checked": { color: "#FF7F50" },
+                      }}
+                    />
+                  }
+                  label={brand}
                 />
-              }
-              label={`In Stock (${inStockCount})`}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="outOfStock"
-                  checked={filters.outOfStock}
-                  onChange={handleCheckbox}
-                  sx={{
-                    color: "#FF7F50",
-                    "&.Mui-checked": { color: "#FF7F50" },
-                  }}
-                />
-              }
-              label={`Out of Stock (${outOfStockCount})`}
-            />
+              ))}
+            </FormGroup>
           </Paper>
         </Grid>
 
         {/* RIGHT SIDE — Product Grid */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={8} my={1}>
           <Grid container spacing={3}>
-            {filteredProducts.map((product) => (
+            {finalFilteredProducts.map((product) => (
               <Grid item xs={12} sm={6} md={6} lg={6} key={product.id}>
                 <ProductCard product={product} />
               </Grid>
@@ -146,7 +190,7 @@ const products = [
     brand: "SJCAM",
     model: "SJ8 Pro",
     category: "Action Camera",
-    status: "out of stock",
+    status: "In Stock",
     product_code: "SJ8PRO",
     image:
       "https://www.startech.com.bd/image/cache/catalog/camera/action-camera/sjcam/sjcam-sj8/sjcam-sj8-01-228x228.jpg",

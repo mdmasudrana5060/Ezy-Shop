@@ -84,6 +84,11 @@ const QuantityBox = ({ product }) => {
               borderRadius: "5px",
               px: 2,
               fontWeight: "bold",
+              transition: "transform 0.3s ease", // smooth animation
+              "&:hover": {
+                backgroundColor: "blue",
+                transform: "scale(1.1)", // increase size on hover
+              },
             }}
           >
             Buy Now

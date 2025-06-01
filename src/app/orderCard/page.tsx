@@ -39,7 +39,7 @@ const OrderCard = () => {
     <Box sx={{ p: 2, backgroundColor: "#f0f2f5" }}>
       <Grid spacing={3} container>
         {/* UserCard Section (8 columns on md+, full width on mobile) */}
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid item xs={12} md={8}>
           <Paper elevation={6} sx={{ p: 3, bgcolor: "white" }}>
             <UserCard
               name=""
@@ -53,7 +53,8 @@ const OrderCard = () => {
         </Grid>
 
         {/* Order Summary Section (4 columns on md+, full width on mobile) */}
-        <Grid size={{ xs: 12, md: 4 }}>
+
+        <Grid item xs={12} md={4}>
           <Paper elevation={6} sx={{ p: 3, mb: 2, bgcolor: "white" }}>
             <FormControl>
               <FormLabel>Delivery Options</FormLabel>

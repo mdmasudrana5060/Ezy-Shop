@@ -12,7 +12,7 @@ const Products = () => {
       my={8}
       gap={6}
     >
-      {products.map((product) => (
+      {products?.map((product) => (
         <Box
           key={product.title}
           width="100%" // Take full width of grid cell

@@ -4,3 +4,6 @@ body {
   width: 100vw;
   overflow-x: hidden;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

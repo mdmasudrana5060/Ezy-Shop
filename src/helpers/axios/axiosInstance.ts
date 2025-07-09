@@ -1,54 +1,40 @@
-import { authKey } from "@/constants/authkey";
-import {
-  IGenericErrorMessage,
-  IGenericErrorResponse,
-  ResponseSuccessType,
-} from "@/types";
-import { getFromLocalStorage } from "@/utils/local-storage";
 import axios from "axios";
+import { authKey } from "@/constants/authKey";
+import { getFromLocalStorage } from "@/utils/local-storage";
 
 const instance = axios.create();
 
 instance.defaults.headers.post["Content-Type"] = "application/json";
-(instance.defaults.headers["Accept"] = "application/json"),
-  (instance.defaults.timeout = 60000);
+instance.defaults.headers["Accept"] = "application/json";
+instance.defaults.timeout = 60000;
 
+// Request interceptor: attach token only if requiresAuth flag is set
 instance.interceptors.request.use(
   function (config) {
-    const accessToken = getFromLocalStorage(authKey);
-    if (accessToken) {
-      config.headers.Authorization = accessToken;
+    // Only add Authorization header if requiresAuth is true
+    if (config.headers?.requiresAuth) {
+      const accessToken = getFromLocalStorage(authKey);
+      if (accessToken) {
+        config.headers.Authorization = accessToken;
+      }
+      // Remove the custom flag so it doesn't get sent to server
+      delete config.headers.requiresAuth;
     }
-
     return config;
   },
   function (error) {
-    // Do something with request error
     return Promise.reject(error);
   }
 );
 
-// Add a response interceptor
+// Response interceptor: just return the original response so RTK Query can handle it
 instance.interceptors.response.use(
-  // @ts-ignore
   function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
-    const responseObject: ResponseSuccessType = {
-      data: response?.data?.data?.data,
-      meta: response?.data?.data?.meta,
-    };
-    return responseObject;
+    return response;
   },
   function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
-    const responseObject: IGenericErrorResponse = {
-      statusCode: error?.response?.data?.data?.statusCode || 500,
-      message: error?.response?.data?.data?.messsage || "Something went wrong",
-      errorMessages: error?.response?.data?.data?.message,
-    };
-    return responseObject;
+    return Promise.reject(error);
   }
 );
+
 export { instance };

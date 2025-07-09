@@ -13,7 +13,7 @@ const ProductCard = ({
   product,
 }: {
   product: {
-    id: number;
+    id: string;
     title: string;
     description: string | undefined;
     image: string;

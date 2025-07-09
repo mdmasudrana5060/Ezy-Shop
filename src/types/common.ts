@@ -9,6 +9,33 @@ export type IMeta = {
 };
 export type UserRole = keyof typeof USER_ROLE;
 
+export type Product = {
+  _id: string;
+  id: string;
+  title: string;
+  slug: string;
+  price: number;
+  regular_price: number;
+  product_code: string;
+  brand: string;
+  model: string;
+  category: string;
+  image: string;
+  description: string;
+  status: string;
+  isDeleted: boolean;
+  key_features: string[];
+  specification: {
+    main_features?: Record<string, string>;
+    physical_attribute?: Record<string, string>;
+    warranty_information?: Record<string, string>;
+  };
+  question: any[]; // or define a type if known
+  reviews: any[]; // or define a type if known
+  createdAt: string;
+  updatedAt: string;
+};
+
 export interface DrawerItem {
   title: string;
   path: string;

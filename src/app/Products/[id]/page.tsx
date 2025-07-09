@@ -99,7 +99,7 @@ const Page = ({ params }: { params: { id: string } }) => {
               Key Features:
             </Typography>
             <ul style={{ marginTop: 0, paddingLeft: 20 }}>
-              {matchedProduct.key_features.map((f, i) => (
+              {matchedProduct?.key_features?.map((f, i) => (
                 <li key={i}>{f}</li>
               ))}
             </ul>

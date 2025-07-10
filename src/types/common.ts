@@ -30,8 +30,8 @@ export type Product = {
     physical_attribute?: Record<string, string>;
     warranty_information?: Record<string, string>;
   };
-  question: any[]; // or define a type if known
-  reviews: any[]; // or define a type if known
+  question: string[]; // or define a type if known
+  reviews: string[]; // or define a type if known
   createdAt: string;
   updatedAt: string;
 };

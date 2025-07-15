@@ -11,18 +11,18 @@ import {
   Typography,
 } from "@mui/material";
 import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
-// import { registerPatient } from "../service/actions/registerPatient";
+import { register } from "../service/actions/register";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-// import { userLogin } from "../service/actions/userLogin";
-// import { storeUserInfo } from "../service/authService";
+import { userLogin } from "../service/actions/userLogin";
+import { storeUserInfo } from "../service/authService";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CustomForm from "@/components/Form/CustomForm";
 import CustomInput from "@/components/Form/CustomInput";
 
-export const patientValidationSchema = z.object({
+export const customerValidationSchema = z.object({
   name: z.string().min(1, "Please enter your name"),
   email: z.string().email("Please enter a valid email address"),
   contactNumber: z
@@ -35,11 +35,11 @@ export const patientValidationSchema = z.object({
 });
 export const validationSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
-  patient: patientValidationSchema,
+  customer: customerValidationSchema,
 });
 export const defaultValues = {
   password: "",
-  patient: {
+  customer: {
     name: "",
     email: "",
     contactNumber: "",
@@ -50,14 +50,15 @@ const RegisterPage = () => {
   const router = useRouter();
 
   const handleRegister = async (values: FieldValues) => {
+    console.log(values, "values");
     const data = modifyPayload(values);
     try {
-      const res = await registerPatient(data);
+      const res = await register(data);
       console.log(res);
       if (res?.data?.data?.id) {
         toast.success(res?.message);
         const response = await userLogin({
-          email: values.patient.email,
+          email: values.customer.email,
           password: values.password,
         });
 
@@ -101,7 +102,7 @@ const RegisterPage = () => {
             </Box> */}
             <Box>
               <Typography variant="h6" fontWeight={600}>
-                Patient Register
+                Register
               </Typography>
             </Box>
           </Stack>
@@ -112,22 +113,22 @@ const RegisterPage = () => {
               defaultValues={defaultValues}
             >
               <Grid container spacing={2} my={1}>
-                <Grid size={12}>
+                <Grid item xs={12}>
                   <CustomInput
-                    name="patient.name"
+                    name="customer.name"
                     label="Name"
                     fullwidth={true}
                   />
                 </Grid>
-                <Grid size={6}>
+                <Grid item xs={6}>
                   <CustomInput
-                    name="patient.email"
+                    name="customer.email"
                     label="Email"
                     fullwidth={true}
                     type="email"
                   />
                 </Grid>
-                <Grid size={6}>
+                <Grid item xs={6}>
                   <CustomInput
                     name="password"
                     label="Password"
@@ -135,16 +136,16 @@ const RegisterPage = () => {
                     type="password"
                   />
                 </Grid>
-                <Grid size={6}>
+                <Grid item xs={6}>
                   <CustomInput
-                    name="patient.contactNumber"
+                    name="customer.contactNumber"
                     label="Contact No"
                     fullwidth={true}
                   />
                 </Grid>
-                <Grid size={6}>
+                <Grid item xs={6}>
                   <CustomInput
-                    name="patient.address"
+                    name="customer.address"
                     label="Address"
                     fullwidth={true}
                   />

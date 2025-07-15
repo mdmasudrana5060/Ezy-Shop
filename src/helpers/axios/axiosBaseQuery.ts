@@ -32,9 +32,8 @@ export const axiosBaseQuery =
           "Content-Type": contentType || "application/json",
         },
       });
-      console.log(result);
+
       const resData = result.data;
-      console.log(resData);
 
       return {
         data: resData.data?.result ?? resData.data,

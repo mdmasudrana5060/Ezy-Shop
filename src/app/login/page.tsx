@@ -9,9 +9,9 @@ import {
   Typography,
 } from "@mui/material";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-// import { userLogin } from "../service/actions/userLogin";
+import { userLogin } from "../service/actions/userLogin";
 import { toast } from "sonner";
-// import { storeUserInfo } from "../service/authService";
+import { storeUserInfo } from "../service/authService";
 import { useRouter } from "next/navigation";
 
 import z from "zod";
@@ -88,7 +88,7 @@ const LoginPage = () => {
               }}
             >
               <Grid container spacing={2} my={1}>
-                <Grid xs={6}>
+                <Grid item xs={6}>
                   <CustomInput
                     name="email"
                     label="Email"
@@ -96,7 +96,7 @@ const LoginPage = () => {
                     fullwidth={true}
                   />
                 </Grid>
-                <Grid xs={6}>
+                <Grid item xs={6}>
                   <CustomInput
                     name="password"
                     label="Password"
@@ -123,7 +123,7 @@ const LoginPage = () => {
                 Login
               </Button>
               <Typography component="p" fontWeight={600}>
-                Do not have an account?{" "}
+                Do not have an account?
                 <Link href="/register">Create an account</Link>
               </Typography>
             </CustomForm>

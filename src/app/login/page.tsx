@@ -32,11 +32,11 @@ const LoginPage = () => {
   const handleLogin = async (values: FieldValues) => {
     try {
       const res = await userLogin(values);
-
-      if (res?.data?.data?.accessToken) {
+      console.log(res);
+      if (res?.data?.accessToken) {
         toast.success("You logged in successfully");
-        storeUserInfo({ accessToken: res?.data?.data?.accessToken });
-        router.push("/dashboard");
+        storeUserInfo({ accessToken: res?.data?.accessToken });
+        router.push("/");
       } else {
         setError(res.message);
       }

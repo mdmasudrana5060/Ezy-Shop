@@ -31,14 +31,13 @@ const CustomForm = ({
   const { handleSubmit, reset } = methods;
 
   const Submit: SubmitHandler<FieldValues> = (data) => {
-    console.log(data);
     onSubmit(data);
     reset();
   };
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(Submit)}>{children}</form>
+      <form onSubmit={handleSubmit(Submit)}>{children}</form>
     </FormProvider>
   );
 };

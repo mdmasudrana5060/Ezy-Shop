@@ -19,8 +19,13 @@ import LinkNext from "next/link";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useState } from "react";
+import dynamic from "next/dynamic";
 
 const Navbar = () => {
+  const AuthButton = dynamic(
+    () => import("@/components/UI/AuthButton/AuthButton"),
+    { ssr: false }
+  );
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -36,14 +41,7 @@ const Navbar = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={LinkNext} href="/login">
-            <ListItemText primary="Login" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={LinkNext} href="/register">
-            <ListItemText primary="Register" />
-          </ListItemButton>
+          <AuthButton></AuthButton>
         </ListItem>
       </List>
     </Box>
@@ -147,32 +145,8 @@ const Navbar = () => {
             >
               Help & Support
             </Link>
-            <Link
-              href="/login"
-              component={LinkNext}
-              sx={{
-                fontWeight: "bold",
-                color: "#FFFFFF",
-                transition: "all 0.3s ease",
-                ":hover": { color: "#F7AD45", fontSize: "1.1rem" },
-              }}
-              underline="none"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              component={LinkNext}
-              sx={{
-                fontWeight: "bold",
-                color: "#FFFFFF",
-                transition: "all 0.3s ease",
-                ":hover": { color: "#F7AD45", fontSize: "1.1rem" },
-              }}
-              underline="none"
-            >
-              Register
-            </Link>
+
+            <AuthButton />
           </Stack>
         </Stack>
       )}

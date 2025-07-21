@@ -7,7 +7,6 @@ import {
   Grid,
   Link,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
@@ -16,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { userLogin } from "../service/actions/userLogin";
 import { storeUserInfo } from "../service/authService";
-
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CustomForm from "@/components/Form/CustomForm";
@@ -25,10 +23,13 @@ import CustomInput from "@/components/Form/CustomInput";
 export const customerValidationSchema = z.object({
   name: z.string().min(1, "Please enter your name"),
   email: z.string().email("Please enter a valid email address"),
+  gender: z.enum(["male", "female", "other"], {
+    message: "Please select a valid gender",
+  }),
   contactNumber: z
     .string()
     .regex(
-      /^\+8801[0-9]{9}$/,
+      /^(\+88)?01[0-9]{9}$/,
       "Phone number must be in the format +8801XXXXXXXXX"
     ),
   address: z.string().min(1, "Please enter your address"),
@@ -42,6 +43,7 @@ export const defaultValues = {
   customer: {
     name: "",
     email: "",
+    gender: "",
     contactNumber: "",
     address: "",
   },
@@ -50,22 +52,24 @@ const RegisterPage = () => {
   const router = useRouter();
 
   const handleRegister = async (values: FieldValues) => {
-    console.log(values, "values");
     const data = modifyPayload(values);
+
     try {
       const res = await register(data);
-      console.log(res);
-      if (res?.data?.data?.id) {
+      console.log(res, "res");
+
+      if (res?.data?._id) {
         toast.success(res?.message);
         const response = await userLogin({
           email: values.customer.email,
           password: values.password,
         });
+        console.log(response, "from response");
 
-        if (response?.data?.data?.accessToken) {
+        if (response?.data?.accessToken) {
           toast.success("You logged in successfully");
-          storeUserInfo({ accessToken: response?.data?.data?.accessToken });
-          router.push("/dashboard");
+          storeUserInfo({ accessToken: response?.data?.accessToken });
+          // router.push("/dashboard");
         }
       }
     } catch (err: any) {
@@ -134,6 +138,19 @@ const RegisterPage = () => {
                     label="Password"
                     fullwidth={true}
                     type="password"
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <CustomInput
+                    name="customer.gender"
+                    label="Gender"
+                    fullwidth={true}
+                    select={true}
+                    options={[
+                      { label: "Male", value: "male" },
+                      { label: "Female", value: "female" },
+                      { label: "Other", value: "other" },
+                    ]}
                   />
                 </Grid>
                 <Grid item xs={6}>

@@ -1,4 +1,4 @@
-import { SxProps, TextField } from "@mui/material";
+import { MenuItem, SxProps, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 
 type TInputProps = {
@@ -10,6 +10,8 @@ type TInputProps = {
   sx?: SxProps;
   placeholer?: string;
   required?: boolean;
+  select?: boolean;
+  options?: { label: string; value: string }[];
 };
 
 const CustomInput = ({
@@ -21,6 +23,8 @@ const CustomInput = ({
   placeholer,
   sx,
   required,
+  select = false,
+  options = [],
 }: TInputProps) => {
   const { control } = useFormContext();
   return (
@@ -40,7 +44,15 @@ const CustomInput = ({
           required={required}
           error={!!error?.message}
           helperText={error?.message}
-        />
+          select={select}
+        >
+          {select &&
+            options.map((opt) => (
+              <MenuItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </MenuItem>
+            ))}
+        </TextField>
       )}
     />
   );

@@ -1,4 +1,5 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
 
 const CategoryCard = ({
@@ -8,8 +9,7 @@ const CategoryCard = ({
     id: number;
     icon: string;
     name: string;
-    iconSvg: string;
-    color: string;
+    img: string;
   };
 }) => {
   return (
@@ -44,16 +44,11 @@ const CategoryCard = ({
         }}
       >
         <CardContent>
-          <Box
-            sx={{
-              mb: 1.5,
-              svg: {
-                color: gadgetCategory.color,
-                width: 32,
-                height: 32,
-              },
-            }}
-            dangerouslySetInnerHTML={{ __html: gadgetCategory.iconSvg }}
+          <Image
+            src={gadgetCategory.img}
+            width={64}
+            height={64}
+            alt="gadget category image"
           />
           <Typography variant="h6" color="text.primary">
             {gadgetCategory.name}

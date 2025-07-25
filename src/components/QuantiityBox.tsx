@@ -4,9 +4,19 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 import Link from "next/link";
+import { Product } from "@/types";
 
-const QuantityBox = ({ product }) => {
-  console.log(product.title);
+type QuantityBoxProps = {
+  product: Product;
+  selectedOption: "cash" | "installment";
+  selectedPrice: number;
+};
+
+const QuantityBox = ({
+  product,
+  selectedOption,
+  selectedPrice,
+}: QuantityBoxProps) => {
   const [quantity, setQuantity] = useState(1);
 
   const handleIncrement = () => setQuantity((q) => q + 1);
@@ -69,7 +79,7 @@ const QuantityBox = ({ product }) => {
             pathname: "/orderCard",
             query: {
               name: product.title,
-              price: product.price,
+              price: selectedPrice,
               quantity: quantity,
             },
           }}

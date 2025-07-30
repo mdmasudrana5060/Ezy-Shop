@@ -1,5 +1,5 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 
 const CategoryCard = ({
@@ -7,9 +7,9 @@ const CategoryCard = ({
 }: {
   gadgetCategory: {
     id: number;
-    icon: string;
     name: string;
-    img: string;
+    icon: string;
+    img: string | StaticImageData;
   };
 }) => {
   return (

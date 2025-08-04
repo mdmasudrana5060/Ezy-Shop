@@ -1,4 +1,4 @@
-import { authKey } from "@/constants/authKey";
+import { authKeys } from "@/constants/authKey";
 import { decodedToken } from "@/utils/jwt";
 import {
   getFromLocalStorage,
@@ -7,10 +7,10 @@ import {
 } from "@/utils/local-storage";
 
 export const storeUserInfo = ({ accessToken }: { accessToken: string }) => {
-  return setToLocalStorage(authKey, accessToken);
+  return setToLocalStorage(authKeys.accessToken, accessToken);
 };
 export const getUserInfo = () => {
-  const authToken = getFromLocalStorage(authKey);
+  const authToken = getFromLocalStorage(authKeys.accessToken);
 
   if (authToken) {
     const decodedData: any = decodedToken(authToken);
@@ -21,12 +21,12 @@ export const getUserInfo = () => {
   }
 };
 export const isLoggedIn = () => {
-  const authToken = getFromLocalStorage(authKey);
+  const authToken = getFromLocalStorage(authKeys.accessToken);
   if (authToken) {
     return !!authToken;
   }
 };
 
 export const removeUser = () => {
-  return removeFromLocalStorage(authKey);
+  return removeFromLocalStorage(authKeys.accessToken);
 };

@@ -32,7 +32,7 @@ const LoginPage = () => {
   const handleLogin = async (values: FieldValues) => {
     try {
       const res = await userLogin(values);
-      console.log(res);
+
       if (res?.data?.accessToken) {
         toast.success("You logged in successfully");
         storeUserInfo({ accessToken: res?.data?.accessToken });

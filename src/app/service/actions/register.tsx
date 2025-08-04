@@ -10,6 +10,6 @@ export const register = async (formData: FormData) => {
     }
   );
   const customerInfo = res.json();
-  console.log(customerInfo, "customer info");
+
   return customerInfo;
 };

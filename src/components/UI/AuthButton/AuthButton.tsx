@@ -1,3 +1,4 @@
+import { logoutUser } from "@/app/service/actions/logoutUser";
 import { getUserInfo, removeUser } from "@/app/service/authService";
 import { Button } from "@mui/material";
 import Link from "next/link";
@@ -7,8 +8,7 @@ const AuthButton = () => {
   const userInfo = getUserInfo();
   const router = useRouter();
   const handleLogout = () => {
-    removeUser();
-    router.refresh();
+    logoutUser(router);
   };
   const baseButtonStyles = {
     fontWeight: "bold",

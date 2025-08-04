@@ -1,5 +1,5 @@
 import axios from "axios";
-import { authKey } from "@/constants/authKey";
+import { authKeys } from "@/constants/authKey";
 import { getFromLocalStorage } from "@/utils/local-storage";
 
 const instance = axios.create();
@@ -13,7 +13,7 @@ instance.interceptors.request.use(
   function (config) {
     // Only add Authorization header if requiresAuth is true
     if (config.headers?.requiresAuth) {
-      const accessToken = getFromLocalStorage(authKey);
+      const accessToken = getFromLocalStorage(authKeys.accessToken);
       if (accessToken) {
         config.headers.Authorization = accessToken;
       }

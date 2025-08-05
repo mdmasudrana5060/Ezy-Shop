@@ -2,26 +2,40 @@ import { Product } from "@/types";
 import { tagTypes } from "../tag-types";
 import { baseApi } from "./baseApi";
 
-// NOTE: these are the _SAME_ API reference!
+type TMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPage: number;
+};
+
+type TGetAllProductsResponse = {
+  data: Product[];
+  meta: TMeta;
+};
+
 const productsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     createProduct: build.mutation({
-      query: (data) => ({
+      query: (data: FormData) => ({
         url: "/product",
         method: "POST",
-        contentType: "multipart/form-data",
-        data,
+        body: data,
       }),
       invalidatesTags: [tagTypes.product],
     }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getAllProduct: build.query<Product[], Record<string, any>>({
-      query: () => ({
-        url: "/product",
+
+    getAllProducts: build.query({
+      query: ({ page, limit }) => ({
+        url: `/product?page=${page}&limit=${limit}`,
         method: "GET",
       }),
+      transformResponse: (response, meta) => {
+        return { response, meta };
+      },
       providesTags: [tagTypes.product],
     }),
+
     getProduct: build.query<Product, number>({
       query: (id) => ({
         url: `/product/${id}`,
@@ -34,6 +48,6 @@ const productsApi = baseApi.injectEndpoints({
 
 export const {
   useCreateProductMutation,
-  useGetAllProductQuery,
+  useGetAllProductsQuery,
   useGetProductQuery,
 } = productsApi;

@@ -20,6 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import SearchBar from "../SearchBar/SearchBar";
 
 const Navbar = () => {
   const AuthButton = dynamic(
@@ -100,7 +101,8 @@ const Navbar = () => {
           </Typography>
 
           <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
-            <Box sx={{ width: "50%" }}>
+            <SearchBar />
+            {/* <Box sx={{ width: "50%" }}>
               <Box
                 sx={{
                   position: "relative",
@@ -128,7 +130,7 @@ const Navbar = () => {
                   }}
                 />
               </Box>
-            </Box>
+            </Box> */}
           </Box>
 
           <Stack direction="row" spacing={2} alignItems="center">

@@ -35,8 +35,8 @@ export const axiosBaseQuery =
       const resData = result.data;
 
       return {
-        data: resData.data?.result ?? resData.data,
-        meta: resData.data?.meta,
+        data: resData.data,
+        meta: resData.meta,
       };
     } catch (axiosError) {
       const err = axiosError as AxiosError;

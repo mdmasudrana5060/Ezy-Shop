@@ -26,10 +26,13 @@ const productsApi = baseApi.injectEndpoints({
     }),
 
     getAllProducts: build.query({
-      query: ({ page, limit }) => ({
-        url: `/product?page=${page}&limit=${limit}`,
-        method: "GET",
-      }),
+      query: ({ page = 1, limit = 10, searchTerm = "" }) => {
+        let url = `/product?page=${page}&limit=${limit}`;
+        if (searchTerm) {
+          url += `&searchTerm=${encodeURIComponent(searchTerm)}`;
+        }
+        return { url, method: "GET" };
+      },
       transformResponse: (response, meta) => {
         return { response, meta };
       },

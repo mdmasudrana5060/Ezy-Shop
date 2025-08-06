@@ -1,7 +1,7 @@
 "use client";
 
 import ProductCard from "@/components/ProductCard";
-import { useGetAllProductQuery } from "@/redux/api/productApi";
+import { useGetAllProductsQuery } from "@/redux/api/productApi";
 import {
   Box,
   Checkbox,
@@ -22,7 +22,7 @@ const CategoryPage = () => {
   const categoryName = searchParams.get("name") ?? "Unknown";
   console.log(categoryName);
 
-  const { data: products, isLoading, error } = useGetAllProductQuery({});
+  const { data: products, isLoading, error } = useGetAllProductsQuery({});
 
   const filteredProducts = useMemo(() => {
     return (

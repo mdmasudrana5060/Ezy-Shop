@@ -1,6 +1,8 @@
 "use client";
 import ProductCard from "@/components/ProductCard";
 import { useGetAllProductsQuery } from "@/redux/api/productApi";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { setProducts } from "@/redux/slices/productSlice";
 
 import {
   Box,
@@ -10,24 +12,28 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Products = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const dispatch = useAppDispatch();
+  const products = useAppSelector((state) => state.products.products);
   const { data, isLoading, error } = useGetAllProductsQuery({
     page,
     limit,
   });
-  console.log(data);
-  const products = data?.response;
-  const meta = data?.meta;
 
+  useEffect(() => {
+    if (data?.response) {
+      dispatch(setProducts(data.response));
+    }
+  }, [data, dispatch]);
+
+  const meta = data?.meta;
   const totalPages = meta?.totalPage || 1;
-  console.log(totalPages);
 
   const handlePageChange = (e, value) => {
-    console.log(value);
     setPage(value);
   };
   const handleLimitChange = (e) => {
@@ -39,21 +45,34 @@ const Products = () => {
 
   return (
     <Box>
-      <Box
-        display="grid"
-        gridTemplateColumns="repeat(3, 1fr)"
-        justifyContent="center"
-        justifyItems="center"
-        mx={2}
-        my={8}
-        gap={6}
-      >
-        {products?.map((product) => (
-          <Box key={product.id} width="100%" height="100%">
-            <ProductCard product={product} key={product.id} />
-          </Box>
-        ))}
-      </Box>
+      {products && products.length > 0 ? (
+        <Box
+          display="grid"
+          gridTemplateColumns="repeat(3, 1fr)"
+          justifyContent="center"
+          justifyItems="center"
+          mx={2}
+          my={8}
+          gap={6}
+        >
+          {products.map((product) => (
+            <Box key={product.id} width="100%" height="100%">
+              <ProductCard product={product} />
+            </Box>
+          ))}
+        </Box>
+      ) : (
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          width="100%"
+          height="40vh"
+        >
+          <Typography variant="h6">Products not found</Typography>
+        </Stack>
+      )}
+
       <Stack direction="row" spacing={2} justifyContent="center" my={4}>
         <Pagination
           count={totalPages}
@@ -61,7 +80,6 @@ const Products = () => {
           onChange={handlePageChange}
           color="primary"
         />
-
         <Select value={limit} onChange={handleLimitChange} size="small">
           <MenuItem value={10}>10</MenuItem>
           <MenuItem value={20}>20</MenuItem>
@@ -71,4 +89,5 @@ const Products = () => {
     </Box>
   );
 };
+
 export default Products;

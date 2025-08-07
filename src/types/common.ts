@@ -6,6 +6,7 @@ export type IMeta = {
   page: number;
   limit: number;
   total: number;
+  totalPage: number;
 };
 export type UserRole = keyof typeof USER_ROLE;
 

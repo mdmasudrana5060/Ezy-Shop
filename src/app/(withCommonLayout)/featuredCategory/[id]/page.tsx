@@ -22,7 +22,12 @@ const CategoryPage = () => {
   const categoryName = searchParams.get("name") ?? "Unknown";
   console.log(categoryName);
 
-  const { data: products, isLoading, error } = useGetAllProductsQuery({});
+  const { data, isLoading, error } = useGetAllProductsQuery({
+    searchTerm: categoryName,
+  });
+  const products = data?.response;
+  console.log(data?.meta);
+  console.log(products, "products from featured catergory page");
 
   const filteredProducts = useMemo(() => {
     return (

@@ -1,36 +1,50 @@
+"use client";
 import { alpha, Box, InputBase } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import { useGetAllProductsQuery } from "@/redux/api/productApi";
-import { useAppDispatch } from "@/redux/hook";
+import { useAppDispatch, useDebounced } from "@/redux/hook";
 import { setProducts } from "@/redux/slices/productSlice";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const SearchBar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
+
+  const debouncedTerm = useDebounced({
+    searchQuery: searchTerm,
+    delay: 600,
+  });
+
   const query: Record<string, any> = {};
-  query["searchTerm"] = searchQuery;
-  const handleChange = (e) => {
-    e.preventDefault();
-    setSearchQuery(e.target.value);
-    console.log(e.target.value);
-  };
-  const { data, isLoading, error } = useGetAllProductsQuery(
-    {
-      ...query,
-    },
-    { skip: !searchQuery }
-  );
+  if (!!debouncedTerm) {
+    query["searchTerm"] = debouncedTerm;
+  }
+
+  const { data, isLoading, error } = useGetAllProductsQuery(query, {
+    skip: !debouncedTerm,
+  });
+
   useEffect(() => {
     if (data?.response) {
       dispatch(setProducts(data.response));
-      router.push("/products");
     }
   }, [data, dispatch]);
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error occurred</div>;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchTerm.trim()) {
+      if (pathname !== "/products") {
+        router.push("/products");
+      }
+      setSearchTerm("");
+    }
+  };
 
   return (
     <Box sx={{ width: "50%" }}>
@@ -50,8 +64,9 @@ const SearchBar = () => {
       >
         <SearchIcon sx={{ color: "#FFFFFF", mr: 1 }} />
         <InputBase
-          value={searchQuery}
+          value={searchTerm}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           placeholder="Search gadgets..."
           sx={{
             color: "#FFFFFF",
@@ -66,4 +81,5 @@ const SearchBar = () => {
     </Box>
   );
 };
+
 export default SearchBar;

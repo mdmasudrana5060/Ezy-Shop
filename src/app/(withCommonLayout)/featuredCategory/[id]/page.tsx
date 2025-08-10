@@ -1,5 +1,6 @@
 "use client";
 
+import PaginationCard from "@/components/PaginationCard";
 import ProductCard from "@/components/ProductCard";
 import { useGetAllProductsQuery } from "@/redux/api/productApi";
 import {
@@ -11,34 +12,41 @@ import {
   Grid,
   Paper,
   Slider,
+  Stack,
   Typography,
 } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 const CategoryPage = () => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const searchParams = useSearchParams();
   const categoryName = searchParams.get("name") ?? "Unknown";
-  console.log(categoryName);
 
   const { data, isLoading, error } = useGetAllProductsQuery({
+    page,
+    limit,
     searchTerm: categoryName,
   });
-  const products = data?.response;
-  console.log(data?.meta);
-  console.log(products, "products from featured catergory page");
+  console.log(data);
+
+  const products = data?.response ?? [];
+  const meta = data?.meta;
+  console.log(meta);
 
   const filteredProducts = useMemo(() => {
-    return (
-      products?.filter((product) =>
-        product.category?.toLowerCase().includes(categoryName.toLowerCase())
-      ) || []
+    return products?.filter((product) =>
+      product?.category?.toLowerCase().includes(categoryName.toLowerCase())
     );
   }, [products, categoryName]);
 
   const prices = useMemo(
-    () => filteredProducts.map((p) => p.price),
+    () =>
+      filteredProducts
+        .map((p) => p?.price)
+        .filter((price) => typeof price === "number") as number[],
     [filteredProducts]
   );
 
@@ -59,11 +67,10 @@ const CategoryPage = () => {
 
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-
-    setFilters({
-      inStock: name === "inStock" ? checked : filters.inStock,
-      outOfStock: name === "outOfStock" ? checked : filters.outOfStock,
-    });
+    setFilters((prev) => ({
+      ...prev,
+      [name]: checked,
+    }));
   };
 
   const handleBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +84,7 @@ const CategoryPage = () => {
 
   const filteredByStock = useMemo(() => {
     return filteredProducts.filter((product) => {
-      const status = normalizeStatus(product.status || "");
+      const status = normalizeStatus(product?.status || "");
       if (filters.inStock && !filters.outOfStock) return status === "in stock";
       if (!filters.inStock && filters.outOfStock)
         return status === "out of stock";
@@ -89,7 +96,7 @@ const CategoryPage = () => {
     return filteredByStock.filter((product) =>
       selectedBrands.length === 0
         ? true
-        : selectedBrands.includes(product.brand)
+        : selectedBrands.includes(product?.brand)
     );
   }, [filteredByStock, selectedBrands]);
 
@@ -100,16 +107,16 @@ const CategoryPage = () => {
   }, [filteredByBrand, priceRange]);
 
   const uniqueBrands = useMemo(
-    () => [...new Set(filteredProducts.map((p) => p.brand))],
+    () => [...new Set(filteredProducts.map((p) => p?.brand).filter(Boolean))],
     [filteredProducts]
   );
 
   const inStockCount = filteredProducts.filter(
-    (p) => normalizeStatus(p.status || "") === "in stock"
+    (p) => normalizeStatus(p?.status || "") === "in stock"
   ).length;
 
   const outOfStockCount = filteredProducts.filter(
-    (p) => normalizeStatus(p.status || "") === "out of stock"
+    (p) => normalizeStatus(p?.status || "") === "out of stock"
   ).length;
 
   const handleChange = (_: Event, newValue: number | number[]) => {
@@ -117,15 +124,18 @@ const CategoryPage = () => {
   };
 
   return (
-    <Box sx={{ p: 2, backgroundColor: "#f0f2f5" }}>
-      <Grid container spacing={3}>
+    <Box
+      sx={{
+        padding: "20px",
+
+        backgroundColor: "#f0f2f5",
+      }}
+    >
+      <Grid container columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         {/* LEFT SIDE — Filter Panel */}
         <Grid item xs={12} md={4}>
           {/* Price Filter */}
-          <Paper
-            elevation={6}
-            sx={{ p: 2, bgcolor: "white", borderRadius: "10px", m: 1 }}
-          >
+          <Paper elevation={6} sx={{ p: 2, borderRadius: "10px", mb: 3 }}>
             <Typography variant="h6" gutterBottom>
               Price
             </Typography>
@@ -145,10 +155,7 @@ const CategoryPage = () => {
           </Paper>
 
           {/* Availability */}
-          <Paper
-            elevation={6}
-            sx={{ p: 2, bgcolor: "white", borderRadius: "10px", m: 1 }}
-          >
+          <Paper elevation={6} sx={{ p: 2, borderRadius: "10px", mb: 3 }}>
             <Typography gutterBottom fontWeight={600}>
               Availability
             </Typography>
@@ -159,10 +166,7 @@ const CategoryPage = () => {
                     name="inStock"
                     checked={filters.inStock}
                     onChange={handleCheckbox}
-                    sx={{
-                      color: "#FF7F50",
-                      "&.Mui-checked": { color: "#FF7F50" },
-                    }}
+                    sx={{ color: "#FF7F50" }}
                   />
                 }
                 label={`In Stock (${inStockCount})`}
@@ -173,10 +177,7 @@ const CategoryPage = () => {
                     name="outOfStock"
                     checked={filters.outOfStock}
                     onChange={handleCheckbox}
-                    sx={{
-                      color: "#FF7F50",
-                      "&.Mui-checked": { color: "#FF7F50" },
-                    }}
+                    sx={{ color: "#FF7F50" }}
                   />
                 }
                 label={`Out of Stock (${outOfStockCount})`}
@@ -185,10 +186,7 @@ const CategoryPage = () => {
           </Paper>
 
           {/* Brands */}
-          <Paper
-            elevation={6}
-            sx={{ p: 2, bgcolor: "white", borderRadius: "10px", m: 1 }}
-          >
+          <Paper elevation={6} sx={{ p: 2, borderRadius: "10px" }}>
             <Typography gutterBottom fontWeight={600}>
               Brands
             </Typography>
@@ -201,10 +199,7 @@ const CategoryPage = () => {
                       name={brand}
                       checked={selectedBrands.includes(brand)}
                       onChange={handleBrandChange}
-                      sx={{
-                        color: "#FF7F50",
-                        "&.Mui-checked": { color: "#FF7F50" },
-                      }}
+                      sx={{ color: "#FF7F50" }}
                     />
                   }
                   label={brand}
@@ -215,16 +210,33 @@ const CategoryPage = () => {
         </Grid>
 
         {/* RIGHT SIDE — Product Grid */}
-        <Grid item xs={12} md={8} my={1}>
+        <Grid item xs={12} md={8}>
           <Grid container spacing={3}>
-            {finalFilteredProducts.map((product) => (
-              <Grid item xs={12} sm={6} md={6} lg={6} key={product.id}>
+            {finalFilteredProducts.map((product, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={6}
+                lg={6}
+                key={product._id || index}
+              >
                 <ProductCard product={product} />
               </Grid>
             ))}
           </Grid>
         </Grid>
       </Grid>
+      <Stack direction="row" spacing={2} justifyContent="center" my={4}>
+        {meta && (
+          <PaginationCard
+            meta={meta}
+            limit={limit}
+            setLimit={setLimit} // ✅ correct function
+            setPage={setPage}
+          />
+        )}
+      </Stack>
     </Box>
   );
 };

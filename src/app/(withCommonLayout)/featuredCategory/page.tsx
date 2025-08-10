@@ -19,7 +19,7 @@ const FeaturedCategory = () => {
     isLoading,
     error,
   } = useGetAllCategoryQuery({});
-  console.log(gadgetCategories);
+
   return (
     <Box px={{ xs: 2, md: 5 }} py={6} bgcolor="#f9f9f9">
       <Typography variant="h5" fontWeight="bold" mb={4} textAlign="center">

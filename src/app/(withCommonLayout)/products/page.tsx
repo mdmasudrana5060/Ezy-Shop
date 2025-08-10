@@ -1,17 +1,11 @@
 "use client";
+import PaginationCard from "@/components/PaginationCard";
 import ProductCard from "@/components/ProductCard";
 import { useGetAllProductsQuery } from "@/redux/api/productApi";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { setProducts } from "@/redux/slices/productSlice";
 
-import {
-  Box,
-  MenuItem,
-  Pagination,
-  Select,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
 const Products = () => {
@@ -74,7 +68,13 @@ const Products = () => {
       )}
 
       <Stack direction="row" spacing={2} justifyContent="center" my={4}>
-        <Pagination
+        <PaginationCard
+          meta={meta}
+          limit={limit}
+          setLimit={limit}
+          setPage={setPage}
+        />
+        {/* <Pagination
           count={totalPages}
           page={page}
           onChange={handlePageChange}
@@ -84,7 +84,7 @@ const Products = () => {
           <MenuItem value={10}>10</MenuItem>
           <MenuItem value={20}>20</MenuItem>
           <MenuItem value={40}>40</MenuItem>
-        </Select>
+        </Select> */}
       </Stack>
     </Box>
   );

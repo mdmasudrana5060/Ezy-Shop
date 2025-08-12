@@ -104,6 +104,36 @@ const QuantityBox = ({
             Buy Now
           </Button>
         </Link>
+        <Link
+          href={{
+            pathname: "/cart",
+            query: {
+              name: product.title,
+              price: selectedPrice,
+              quantity: quantity,
+            },
+          }}
+          passHref
+          legacyBehavior
+        >
+          <Button
+            sx={{
+              backgroundColor: "blue",
+              color: "white",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              px: 2,
+              fontWeight: "bold",
+              transition: "transform 0.3s ease", // smooth animation
+              "&:hover": {
+                backgroundColor: "blue",
+                transform: "scale(1.1)", // increase size on hover
+              },
+            }}
+          >
+            Add To Cart
+          </Button>
+        </Link>
       </Box>
     </>
   );

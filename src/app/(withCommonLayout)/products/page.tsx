@@ -74,17 +74,6 @@ const Products = () => {
           setLimit={limit}
           setPage={setPage}
         />
-        {/* <Pagination
-          count={totalPages}
-          page={page}
-          onChange={handlePageChange}
-          color="primary"
-        />
-        <Select value={limit} onChange={handleLimitChange} size="small">
-          <MenuItem value={10}>10</MenuItem>
-          <MenuItem value={20}>20</MenuItem>
-          <MenuItem value={40}>40</MenuItem>
-        </Select> */}
       </Stack>
     </Box>
   );

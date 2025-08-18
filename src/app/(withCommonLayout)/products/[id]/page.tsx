@@ -49,7 +49,6 @@ const Page = ({ params }: { params: { id: string } }) => {
   const { id } = use(params);
   const productId = parseInt(id, 10);
   const { data: product, isLoading, error } = useGetProductQuery(productId);
-  console.log(product?.specification);
 
   if (!product) return <div>Product not found</div>;
 

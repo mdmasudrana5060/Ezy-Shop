@@ -18,7 +18,7 @@ const QuantityBox = ({
   selectedPrice,
 }: QuantityBoxProps) => {
   const [quantity, setQuantity] = useState(1);
-
+  console.log(product, "from quantity box");
   const handleIncrement = () => setQuantity((q) => q + 1);
   const handleDecrement = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 

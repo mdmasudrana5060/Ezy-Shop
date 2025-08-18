@@ -7,7 +7,12 @@ type MetaState = {
 };
 
 const initialState: MetaState = {
-  meta: [],
+  meta: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPage: 0,
+  },
 };
 
 const metaSlice = createSlice({
@@ -18,7 +23,12 @@ const metaSlice = createSlice({
       state.meta = action.payload;
     },
     clearMeta(state) {
-      state.meta = [];
+      state.meta = {
+        page: 0,
+        limit: 0,
+        total: 0,
+        totalPage: 0,
+      };
     },
   },
 });

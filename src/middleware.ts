@@ -4,66 +4,62 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Public routes that don't require authentication
-const AUTH_ROUTES = ["/login", "/register"];
+const AuthRoutes = ["/login", "/register"];
 
 // Routes accessible to all authenticated users
-const COMMON_PRIVATE_ROUTES = [
+const commonPrivateRoutes = [
   "/dashboard",
   "/dashboard/change-password",
   "/cart",
 ];
 
 // Role-based private routes (regex for flexibility)
-const ROLE_BASED_ROUTES = {
+const roleBasedPrivateRoutes = {
   ADMIN: [/^\/dashboard\/admin/],
   SUPER_ADMIN: [/^\/dashboard\/super_admin/],
 } as const;
 
-type UserRole = keyof typeof ROLE_BASED_ROUTES;
+type Role = keyof typeof roleBasedPrivateRoutes;
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // ✅ Use await here
   const accessToken = (await cookies()).get("accessToken")?.value;
-  console.log(accessToken, "accessToken from middleware page 28 line");
+  const refreshToken = (await cookies()).get("refreshToken")?.value;
+  console.log(refreshToken, "refresh token from middleware");
 
-  // 1. If no token
   if (!accessToken) {
-    // Allow only auth routes (login, register)
-    if (AUTH_ROUTES.includes(pathname)) {
+    if (AuthRoutes.includes(pathname)) {
       return NextResponse.next();
+    } else {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
-    // Otherwise redirect to login
-    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // 2. Common authenticated routes (available to all roles)
   if (
-    COMMON_PRIVATE_ROUTES.includes(pathname) ||
-    COMMON_PRIVATE_ROUTES.some((route) => pathname.startsWith(route))
+    accessToken &&
+    (commonPrivateRoutes.includes(pathname) ||
+      commonPrivateRoutes.some((route) => pathname.startsWith(route)))
   ) {
     return NextResponse.next();
   }
 
-  // 3. Decode JWT and check role
-  let decoded: any;
-  try {
-    decoded = jwtDecode(accessToken);
-  } catch {
-    // Invalid token → redirect to login
-    return NextResponse.redirect(new URL("/login", request.url));
+  let decodedData = null;
+
+  if (accessToken) {
+    decodedData = jwtDecode(accessToken) as any;
   }
 
-  const userRole: UserRole | undefined = decoded?.data as UserRole;
+  const role = decodedData?.role;
 
-  if (userRole && ROLE_BASED_ROUTES[userRole]) {
-    const allowedRoutes = ROLE_BASED_ROUTES[userRole];
-    if (allowedRoutes.some((pattern) => pathname.match(pattern))) {
+  if (role && roleBasedPrivateRoutes[role as Role]) {
+    const routes = roleBasedPrivateRoutes[role as Role];
+    if (routes.some((route) => pathname.match(route))) {
       return NextResponse.next();
     }
   }
 
-  // 4. Default: block and redirect home
   return NextResponse.redirect(new URL("/", request.url));
 }
 

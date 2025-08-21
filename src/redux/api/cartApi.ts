@@ -21,6 +21,7 @@ const cartApi = baseApi.injectEndpoints({
         url: "/cart/create-cart",
         method: "POST",
         body: data,
+        credentials: "include",
       }),
       invalidatesTags: [tagTypes.cart],
     }),
@@ -29,6 +30,7 @@ const cartApi = baseApi.injectEndpoints({
       query: () => ({
         url: `/cart/`,
         method: "GET",
+        credentials: "include",
       }),
       providesTags: [tagTypes.cart],
     }),

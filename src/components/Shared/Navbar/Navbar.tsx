@@ -4,8 +4,6 @@ import {
   Stack,
   Typography,
   Link,
-  InputBase,
-  alpha,
   useTheme,
   useMediaQuery,
   IconButton,
@@ -16,7 +14,6 @@ import {
   ListItemButton,
 } from "@mui/material";
 import LinkNext from "next/link";
-import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useState } from "react";
 import dynamic from "next/dynamic";

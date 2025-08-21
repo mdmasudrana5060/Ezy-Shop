@@ -64,7 +64,6 @@ const RegisterPage = () => {
           email: values.customer.email,
           password: values.password,
         });
-        console.log(response, "from response");
 
         if (response?.data?.accessToken) {
           toast.success("You logged in successfully");

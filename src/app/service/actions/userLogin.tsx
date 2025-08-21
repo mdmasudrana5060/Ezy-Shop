@@ -1,6 +1,7 @@
 import { FieldValues } from "react-hook-form";
 
 import setRefreshToken from "./setRefreshToken";
+import setAccessToken from "./setAccessToken";
 
 export const userLogin = async (data: FieldValues) => {
   const res = await fetch(
@@ -21,8 +22,13 @@ export const userLogin = async (data: FieldValues) => {
   if (userInfo.data.refreshToken) {
     setRefreshToken(userInfo.data.refreshToken, {
       redirect: "/",
-      passwordChangeRequired,
     });
   }
-  return userInfo;
+
+  if (userInfo.data.accessToken) {
+    setAccessToken(userInfo.data.accessToken, {
+      redirect: "/",
+    });
+  }
+  return { ...userInfo, passwordChangeRequired };
 };

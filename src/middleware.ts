@@ -3,17 +3,17 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Public routes that don't require authentication
+// Public routes
 const AuthRoutes = ["/login", "/register"];
 
-// Routes accessible to all authenticated users
+// Common private routes
 const commonPrivateRoutes = [
   "/dashboard",
   "/dashboard/change-password",
   "/cart",
 ];
 
-// Role-based private routes (regex for flexibility)
+// Role-based private routes
 const roleBasedPrivateRoutes = {
   ADMIN: [/^\/dashboard\/admin/],
   SUPER_ADMIN: [/^\/dashboard\/super_admin/],
@@ -24,46 +24,44 @@ type Role = keyof typeof roleBasedPrivateRoutes;
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // ✅ Use await here
-  const accessToken = (await cookies()).get("accessToken")?.value;
-  const refreshToken = (await cookies()).get("refreshToken")?.value;
-  console.log(refreshToken, "refresh token from middleware");
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
 
-  if (!accessToken) {
-    if (AuthRoutes.includes(pathname)) {
-      return NextResponse.next();
-    } else {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-  }
-
-  if (
-    accessToken &&
-    (commonPrivateRoutes.includes(pathname) ||
-      commonPrivateRoutes.some((route) => pathname.startsWith(route)))
-  ) {
+  // Allow public routes
+  if (AuthRoutes.includes(pathname)) {
     return NextResponse.next();
   }
 
-  let decodedData = null;
-
+  // User has accessToken → validate roles and private routes
   if (accessToken) {
-    decodedData = jwtDecode(accessToken) as any;
-  }
-
-  const role = decodedData?.role;
-
-  if (role && roleBasedPrivateRoutes[role as Role]) {
-    const routes = roleBasedPrivateRoutes[role as Role];
-    if (routes.some((route) => pathname.match(route))) {
+    if (
+      commonPrivateRoutes.includes(pathname) ||
+      commonPrivateRoutes.some((route) => pathname.startsWith(route))
+    ) {
       return NextResponse.next();
+    }
+
+    const decodedData = jwtDecode(accessToken) as any;
+    const role = decodedData?.role;
+
+    if (role && roleBasedPrivateRoutes[role as Role]) {
+      const routes = roleBasedPrivateRoutes[role as Role];
+      if (routes.some((route) => pathname.match(route))) {
+        return NextResponse.next();
+      }
     }
   }
 
-  return NextResponse.redirect(new URL("/", request.url));
+  // If no accessToken but refreshToken exists → allow request to reach server
+  if (!accessToken && refreshToken) {
+    return NextResponse.next();
+  }
+
+  // If no tokens → redirect to login
+  return NextResponse.redirect(new URL("/login", request.url));
 }
 
-// Matcher (update as needed)
 export const config = {
   matcher: ["/dashboard/:path*", "/cart/:path*"],
 };

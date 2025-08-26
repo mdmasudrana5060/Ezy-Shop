@@ -9,16 +9,15 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 import { register } from "../service/actions/register";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { userLogin } from "../service/actions/userLogin";
-import { storeUserInfo } from "../service/authService";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CustomForm from "@/components/Form/CustomForm";
 import CustomInput from "@/components/Form/CustomInput";
+import setAccessToken from "../service/actions/setAccessToken";
 
 export const customerValidationSchema = z.object({
   name: z.string().min(1, "Please enter your name"),
@@ -49,8 +48,6 @@ export const defaultValues = {
   },
 };
 const RegisterPage = () => {
-  const router = useRouter();
-
   const handleRegister = async (values: FieldValues) => {
     const data = modifyPayload(values);
 
@@ -67,8 +64,7 @@ const RegisterPage = () => {
 
         if (response?.data?.accessToken) {
           toast.success("You logged in successfully");
-          storeUserInfo({ accessToken: response?.data?.accessToken });
-          // router.push("/dashboard");
+          setAccessToken(response?.data?.accessToken);
         }
       }
     } catch (err: any) {

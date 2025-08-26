@@ -1,3 +1,4 @@
+import { useCart } from "@/hooks.ts/useCart";
 import {
   Box,
   Button,
@@ -20,6 +21,7 @@ const ProductCard = ({
     price: number;
   };
 }) => {
+  const { addToCart } = useCart();
   return (
     <Link href={`/products/${product.id}`} passHref legacyBehavior>
       <Box
@@ -72,6 +74,7 @@ const ProductCard = ({
             </Button>
             <Button
               size="small"
+              onClick={() => addToCart(product)}
               // onClick={(e) => {
               //   e.preventDefault();
               //   e.stopPropagation();

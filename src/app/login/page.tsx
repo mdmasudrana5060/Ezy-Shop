@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 import { userLogin } from "../service/actions/userLogin";
 import { toast } from "sonner";
 import z from "zod";
@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import CustomForm from "@/components/Form/CustomForm";
 import CustomInput from "@/components/Form/CustomInput";
-import setAccessToken from "../service/actions/setAccessToken";
+import { useRouter } from "next/navigation";
 
 export const validationSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -24,6 +24,7 @@ export const validationSchema = z.object({
 });
 
 const LoginPage = () => {
+  const router = useRouter();
   const [error, setError] = useState("");
   const handleLogin = async (values: FieldValues) => {
     try {
@@ -31,7 +32,7 @@ const LoginPage = () => {
 
       if (res?.data?.accessToken) {
         toast.success("You logged in successfully");
-        await setAccessToken(res.data.accessToken);
+        router.push("/");
       } else {
         setError(res.message);
       }

@@ -1,26 +1,22 @@
+import { getNewAccessToken } from "@/app/service/getNewAccessToken";
 import axios from "axios";
-import { authKeys } from "@/constants/authKey";
-import { getFromLocalStorage } from "@/utils/local-storage";
-import { getNewAccessToken } from "@/app/service/authService";
-import setAccessToken from "@/app/service/actions/setAccessToken";
 
-const instance = axios.create();
+const instance = axios.create({
+  withCredentials: true, // important for sending cookies automatically
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+  timeout: 60000,
+});
 
-instance.defaults.headers.post["Content-Type"] = "application/json";
-instance.defaults.headers["Accept"] = "application/json";
-instance.defaults.timeout = 60000;
-
-// Request interceptor: attach token only if requiresAuth flag is set
+// Request interceptor: attach accessToken from cookie if requiresAuth is true
 instance.interceptors.request.use(
   function (config) {
-    // Only add Authorization header if requiresAuth is true
     if (config.headers?.requiresAuth) {
-      const accessToken = getFromLocalStorage(authKeys.accessToken);
-      if (accessToken) {
-        config.headers.Authorization = accessToken;
-      }
-      // Remove the custom flag so it doesn't get sent to server
-      delete config.headers.requiresAuth;
+      // Backend reads accessToken from cookie automatically
+      // Optionally, you could read it from cookie client-side if needed
+      delete config.headers.requiresAuth; // remove custom flag
     }
     return config;
   },
@@ -29,28 +25,31 @@ instance.interceptors.request.use(
   }
 );
 
-// Response interceptor: just return the original response so RTK Query can handle it
+// Response interceptor: handle accessToken expiration
 instance.interceptors.response.use(
   function (response) {
-    return response;
+    return response; // let RTK Query handle it
   },
   async function (error) {
     const config = error.config;
-    if (error?.response?.status === 500 && !config.sent) {
-      config.sent = true;
-      const response = await getNewAccessToken();
-      const accessToken = response?.data?.accessToken;
-      config.headers["Authorization"] = accessToken;
-      setAccessToken(accessToken);
-      return instance(config);
-    } else {
-      const responseObject = {
-        statusCode: error?.response?.data?.statusCode || 500,
-        message: error?.response?.data?.message || "Something went wrong",
-        errorMessage: error?.response?.data?.message,
-      };
-      return responseObject;
+    if (error?.response?.status === 401 && !config._retry) {
+      config._retry = true;
+      try {
+        // refresh accessToken via refreshToken cookie
+        const response = await getNewAccessToken();
+
+        return instance(config); // retry original request
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
     }
+
+    const responseObject = {
+      statusCode: error?.response?.data?.statusCode || 500,
+      message: error?.response?.data?.message || "Something went wrong",
+      errorMessage: error?.response?.data?.message,
+    };
+    return responseObject;
   }
 );
 

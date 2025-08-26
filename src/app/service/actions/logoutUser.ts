@@ -1,16 +1,13 @@
-import { authKeys } from "@/constants/authKey";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { deleteCookies } from "./deleteCookies";
+import { redirect } from "next/navigation";
+import { FieldValues } from "react-hook-form";
 
-export const logoutUser = async (router: AppRouterInstance) => {
-  await deleteCookies([
-    authKeys.refreshToken,
-    authKeys.accessToken,
-    "refreshToken",
-    "accessToken",
-  ]);
-
-  // Navigate and refresh
-  router.push("/");
-  router.refresh();
+export const logoutUser = async (data: FieldValues) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/logout`,
+    {
+      method: "POST",
+      credentials: "include",
+    }
+  );
+  redirect("/");
 };

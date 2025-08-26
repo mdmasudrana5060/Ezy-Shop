@@ -9,10 +9,10 @@ type TMeta = {
   totalPage: number;
 };
 
-type TGetAllProductsResponse = {
-  data: Product[];
-  meta: TMeta;
-};
+// type TGetAllProductsResponse = {
+//   data: Product[];
+//   meta: TMeta;
+// };
 
 const productsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({

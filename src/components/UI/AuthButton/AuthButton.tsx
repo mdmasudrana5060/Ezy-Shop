@@ -1,15 +1,29 @@
+"use client";
+
 import { logoutUser } from "@/app/service/actions/logoutUser";
-import { getUserInfo, removeUser } from "@/app/service/authService";
+import { getUserInfo } from "@/app/service/authService";
 import { Button } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const AuthButton = () => {
-  const userInfo = getUserInfo();
+  const [userInfo, setUserInfo] = useState<any>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getUserInfo();
+
+      setUserInfo(user);
+    };
+    fetchUser();
+  }, []);
+
   const handleLogout = () => {
     logoutUser(router);
   };
+
   const baseButtonStyles = {
     fontWeight: "bold",
     color: "#FFFFFF",
@@ -29,6 +43,7 @@ const AuthButton = () => {
       transform: "none",
     },
   };
+
   return (
     <>
       {userInfo && userInfo.userEmail ? (
@@ -58,4 +73,5 @@ const AuthButton = () => {
     </>
   );
 };
+
 export default AuthButton;

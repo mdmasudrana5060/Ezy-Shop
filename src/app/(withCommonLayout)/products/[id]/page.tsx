@@ -56,7 +56,6 @@ const Page = ({ params }: { params: { id: string } }) => {
 
   return (
     <Box>
-      {/* ---------- Hero / price section ---------- */}
       <Box
         m={8}
         display="flex"

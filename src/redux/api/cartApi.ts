@@ -1,4 +1,3 @@
-import { Product } from "@/types";
 import { tagTypes } from "../tag-types";
 import { baseApi } from "./baseApi";
 
@@ -9,20 +8,27 @@ type TMeta = {
   totalPage: number;
 };
 
-type TGetAllProductsResponse = {
-  data: Product[];
-  meta: TMeta;
-};
+// type TGetAllProductsResponse = {
+//   data: Product[];
+//   meta: TMeta;
+// };
 
 const cartApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     createCart: build.mutation({
-      query: (data: FormData) => ({
-        url: "/cart/create-cart",
-        method: "POST",
-        body: data,
-        credentials: "include",
-      }),
+      query: (cartData) => {
+        console.log(cartData, "cartData from frontend"); // ✅ log
+
+        return {
+          url: `/cart/create-cart`,
+          method: "POST",
+          data: { cart: cartData }, // use 'data' for axios body
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // ✅ axios option for sending cookies
+        };
+      },
       invalidatesTags: [tagTypes.cart],
     }),
 

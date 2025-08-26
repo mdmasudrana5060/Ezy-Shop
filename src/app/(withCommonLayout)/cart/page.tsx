@@ -26,19 +26,22 @@ type TCart = {
 
 const Page = () => {
   const { data: cartsData, isLoading } = useGetAllCartQuery({});
-
-  const [carts, setCarts] = useState<TCart[]>([]);
+  const [carts, setCarts] = useState<
+    (TCart & { selected: boolean; userId: string })[]
+  >([]);
   const [isSelectAll, setIsSelectAll] = useState(true);
 
   // Sync backend carts to local state when loaded
   useEffect(() => {
     if (Array.isArray(cartsData)) {
-      setCarts(
-        cartsData.map((cart) => ({
-          ...cart,
+      const flattened = cartsData.flatMap((cart) =>
+        cart.items.map((item) => ({
+          ...item,
           selected: true, // default selected
+          userId: cart.userId, // keep reference to user cart
         }))
       );
+      setCarts(flattened);
     }
   }, [cartsData]);
 
@@ -71,7 +74,7 @@ const Page = () => {
 
   const handleSelectOne = (id: string, checked: boolean) => {
     setCarts((prev) =>
-      prev.map((cart: TCart) =>
+      prev.map((cart) =>
         cart.productId === id ? { ...cart, selected: checked } : cart
       )
     );

@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Box, Typography, IconButton, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-
 import Link from "next/link";
 import { Product } from "@/types";
+import { useCart } from "@/hooks.ts/useCart";
 
 type QuantityBoxProps = {
   product: Product;
@@ -18,7 +18,7 @@ const QuantityBox = ({
   selectedPrice,
 }: QuantityBoxProps) => {
   const [quantity, setQuantity] = useState(1);
-  console.log(product, "from quantity box");
+  const { addToCart } = useCart();
   const handleIncrement = () => setQuantity((q) => q + 1);
   const handleDecrement = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
@@ -104,36 +104,25 @@ const QuantityBox = ({
             Buy Now
           </Button>
         </Link>
-        <Link
-          href={{
-            pathname: "/cart",
-            query: {
-              name: product.title,
-              price: selectedPrice,
-              quantity: quantity,
+
+        <Button
+          onClick={() => addToCart(product, selectedPrice, quantity)}
+          sx={{
+            backgroundColor: "blue",
+            color: "white",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            px: 2,
+            fontWeight: "bold",
+            transition: "transform 0.3s ease", // smooth animation
+            "&:hover": {
+              backgroundColor: "blue",
+              transform: "scale(1.1)", // increase size on hover
             },
           }}
-          passHref
-          legacyBehavior
         >
-          <Button
-            sx={{
-              backgroundColor: "blue",
-              color: "white",
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-              px: 2,
-              fontWeight: "bold",
-              transition: "transform 0.3s ease", // smooth animation
-              "&:hover": {
-                backgroundColor: "blue",
-                transform: "scale(1.1)", // increase size on hover
-              },
-            }}
-          >
-            Add To Cart
-          </Button>
-        </Link>
+          Add To Cart
+        </Button>
       </Box>
     </>
   );

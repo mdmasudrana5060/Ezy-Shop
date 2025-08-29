@@ -18,6 +18,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import SearchBar from "../SearchBar/SearchBar";
+import { CartButton } from "@/components/UI/CartButton/cartButton";
 
 const Navbar = () => {
   const AuthButton = dynamic(
@@ -131,6 +132,32 @@ const Navbar = () => {
           </Box>
 
           <Stack direction="row" spacing={2} alignItems="center">
+            <Link
+              href="/cart"
+              component={LinkNext}
+              sx={{
+                fontWeight: "bold",
+                color: "#FFFFFF",
+                transition: "all 0.3s ease",
+                ":hover": { color: "#F7AD45", fontSize: "1.1rem" },
+              }}
+              underline="none"
+            >
+              <CartButton />
+            </Link>
+            <Link
+              href="/orderCard"
+              component={LinkNext}
+              sx={{
+                fontWeight: "bold",
+                color: "#FFFFFF",
+                transition: "all 0.3s ease",
+                ":hover": { color: "#F7AD45", fontSize: "1.1rem" },
+              }}
+              underline="none"
+            >
+              Order
+            </Link>
             <Link
               href="/Help&Support"
               component={LinkNext}

@@ -1,27 +1,49 @@
 "use client";
 
 import { logoutUser } from "@/app/service/actions/logoutUser";
-import { getUserInfo } from "@/app/service/authService";
+import { getNewAccessToken } from "@/app/service/getNewAccessToken";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { clearAuth, setAccessToken } from "@/redux/slices/authSlice";
 import { Button } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const AuthButton = () => {
-  const [userInfo, setUserInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const accessToken = useAppSelector((state) => state.auth.accessToken);
+  const isAuthenticated = !!accessToken;
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const user = await getUserInfo();
+    const checkToken = async () => {
+      if (!accessToken) {
+        try {
+          const res = await getNewAccessToken();
 
-      setUserInfo(user);
+          const newToken = res?.data?.accessToken;
+          if (newToken) {
+            dispatch(setAccessToken(newToken));
+          } else {
+            dispatch(clearAuth());
+          }
+        } catch (err) {
+          dispatch(clearAuth());
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
     };
-    fetchUser();
-  }, []);
+
+    checkToken();
+  }, [accessToken, dispatch]);
 
   const handleLogout = () => {
     logoutUser(router);
+    dispatch(clearAuth());
   };
 
   const baseButtonStyles = {
@@ -44,9 +66,13 @@ const AuthButton = () => {
     },
   };
 
+  if (loading) {
+    return null; // or show a spinner if you want
+  }
+
   return (
     <>
-      {userInfo && userInfo.userEmail ? (
+      {isAuthenticated ? (
         <Button
           sx={{
             ...baseButtonStyles,

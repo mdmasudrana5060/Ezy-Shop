@@ -6,6 +6,9 @@
 // import KeyIcon from "@mui/icons-material/Key";
 // import { toast } from "sonner";
 // import { useRouter } from "next/navigation";
+// import { logoutUser } from "@/app/service/actions/logoutUser";
+// import CustomForm from "@/components/Form/CustomForm";
+// import CustomInput from "@/components/Form/CustomInput";
 
 // const validationSchema = z.object({
 //   oldPassword: z.string().min(6, "Must be at least 6 characters long"),
@@ -13,11 +16,11 @@
 // });
 
 // const ChangePassword = () => {
-//   const [changePassword] = useChangePasswordMutation();
+//   //   const [changePassword] = useChangePasswordMutation();
 //   const router = useRouter();
 //   const onSubmit = async (values: FieldValues) => {
 //     try {
-//       const res = await changePassword(values);
+//       const res = await ChangePassword(values);
 
 //       if ("data" in res && res.data.status === 200) {
 //         logoutUser(router);
@@ -62,27 +65,25 @@
 //           Change password
 //         </Typography>
 //       </Stack>
-//       <PHForm
+//       <CustomForm
 //         onSubmit={onSubmit}
 //         defaultValues={{ oldPassword: "", newPassword: "" }}
 //         resolver={zodResolver(validationSchema)}
 //       >
 //         <Grid>
 //           <Grid item xs={12} sm={12} md={6}>
-//             <PHInput
+//             <CustomInput
 //               name="oldPassword"
 //               type="password"
 //               label="Old Password"
-//               fullWidth
 //               sx={{ mb: 2 }}
 //             />
 //           </Grid>
 //           <Grid item xs={12} sm={12} md={6}>
-//             <PHInput
+//             <CustomInput
 //               name="newPassword"
 //               type="password"
 //               label="New Password"
-//               fullWidth
 //               sx={{ mb: 2 }}
 //             />
 //           </Grid>
@@ -91,7 +92,7 @@
 //         <Button type="submit" sx={{ width: "100%", my: 2 }}>
 //           change Password
 //         </Button>
-//       </PHForm>
+//       </CustomForm>
 //     </Box>
 //   );
 // };

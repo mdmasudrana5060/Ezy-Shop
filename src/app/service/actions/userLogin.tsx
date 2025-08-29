@@ -1,3 +1,5 @@
+import { setAccessToken } from "@/redux/slices/authSlice";
+import { store } from "@/redux/store";
 import { FieldValues } from "react-hook-form";
 
 export const userLogin = async (data: FieldValues) => {
@@ -13,6 +15,11 @@ export const userLogin = async (data: FieldValues) => {
     }
   );
   const userInfo = await res.json();
+  const { accessToken, needsPasswordChange } = userInfo.data;
+
+  if (accessToken) {
+    store.dispatch(setAccessToken(accessToken));
+  }
   const passwordChangeRequired = userInfo.data.needsPasswordChange;
 
   return { ...userInfo, passwordChangeRequired };

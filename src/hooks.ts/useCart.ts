@@ -9,7 +9,6 @@ export const useCart = () => {
     selectedPrice?: number,
     quantity: number = 1
   ) => {
-    console.log(product, "product from useCart from hooks");
     const cartData = {
       id: product.id,
       name: product.title,
@@ -19,7 +18,6 @@ export const useCart = () => {
 
     try {
       const res = await createCart(cartData).unwrap();
-      console.log(res, "Cart item added!");
     } catch (error) {
       console.error("Failed to add to cart:", error);
     }

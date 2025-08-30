@@ -15,6 +15,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState, useEffect } from "react";
 import { useGetAllCartQuery } from "@/redux/api/cartApi";
+import { useAppSelector } from "@/redux/hook";
 
 type TCart = {
   productId: string;
@@ -25,7 +26,10 @@ type TCart = {
 };
 
 const Page = () => {
-  const { data: cartsData, isLoading } = useGetAllCartQuery({});
+  const accessToken = useAppSelector((state) => state.auth.accessToken);
+  const { data: cartsData, isLoading } = useGetAllCartQuery(accessToken, {
+    skip: !accessToken || typeof accessToken !== "string", // ✅ skip if no valid token
+  });
   const [carts, setCarts] = useState<
     (TCart & { selected: boolean; userId: string })[]
   >([]);

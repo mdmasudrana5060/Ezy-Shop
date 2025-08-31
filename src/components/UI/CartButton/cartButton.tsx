@@ -1,12 +1,12 @@
-import { useGetAllCartQuery } from "@/redux/api/cartApi";
+import { useCart } from "@/hooks.ts/useCart";
+
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
 
 export const CartButton = () => {
-  const { data, isLoading } = useGetAllCartQuery({});
-  const cartCount = data?.[0]?.items?.length || 0;
+  const { totalItems, isLoading } = useCart();
   return (
-    <Badge badgeContent={cartCount} color="primary">
+    <Badge badgeContent={totalItems} color="primary">
       <ShoppingCartIcon />
     </Badge>
   );

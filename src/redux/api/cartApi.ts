@@ -38,12 +38,11 @@ const cartApi = baseApi.injectEndpoints({
     // Get all cart items
     getAllCart: build.query({
       query: (accessToken) => {
-        console.log("Access Token being sent from cartApi", accessToken);
         return {
           url: `/cart/`,
           method: "GET",
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `${accessToken}`,
           },
         };
       },

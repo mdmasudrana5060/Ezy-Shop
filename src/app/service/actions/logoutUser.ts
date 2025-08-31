@@ -1,13 +1,19 @@
+// frontend/service/logoutUser.ts
 import { redirect } from "next/navigation";
-import { FieldValues } from "react-hook-form";
+import { store } from "@/redux/store";
+import { clearAuth } from "@/redux/slices/authSlice";
 
-export const logoutUser = async (data: FieldValues) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/logout`,
-    {
+export const logoutUser = async () => {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
-    }
-  );
-  redirect("/");
+    });
+
+    store.dispatch(clearAuth());
+
+    redirect("/");
+  } catch (error) {
+    console.error("Logout failed", error);
+  }
 };

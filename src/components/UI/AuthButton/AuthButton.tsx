@@ -42,7 +42,7 @@ const AuthButton = () => {
   }, [accessToken, dispatch]);
 
   const handleLogout = () => {
-    logoutUser(router);
+    logoutUser();
     dispatch(clearAuth());
   };
 

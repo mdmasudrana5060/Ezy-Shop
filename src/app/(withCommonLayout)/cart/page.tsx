@@ -14,8 +14,8 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState, useEffect } from "react";
-import { useGetAllCartQuery } from "@/redux/api/cartApi";
-import { useAppSelector } from "@/redux/hook";
+
+import { useCart } from "@/hooks.ts/useCart";
 
 type TCart = {
   productId: string;
@@ -26,28 +26,14 @@ type TCart = {
 };
 
 const Page = () => {
-  const accessToken = useAppSelector((state) => state.auth.accessToken);
-  const { data: cartsData, isLoading } = useGetAllCartQuery(accessToken, {
-    skip: !accessToken || typeof accessToken !== "string", // ✅ skip if no valid token
-  });
-  const [carts, setCarts] = useState<
-    (TCart & { selected: boolean; userId: string })[]
-  >([]);
-  const [isSelectAll, setIsSelectAll] = useState(true);
+  const { cartItems, totalCount, isLoading } = useCart();
+  const [carts, setCarts] = useState(cartItems);
 
-  // Sync backend carts to local state when loaded
   useEffect(() => {
-    if (Array.isArray(cartsData)) {
-      const flattened = cartsData.flatMap((cart) =>
-        cart.items.map((item) => ({
-          ...item,
-          selected: true, // default selected
-          userId: cart.userId, // keep reference to user cart
-        }))
-      );
-      setCarts(flattened);
-    }
-  }, [cartsData]);
+    setCarts(cartItems);
+  }, [cartItems]);
+
+  const [isSelectAll, setIsSelectAll] = useState(true);
 
   const handleIncrease = (id: string) => {
     setCarts((prev) =>

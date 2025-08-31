@@ -35,8 +35,8 @@ instance.interceptors.response.use(
     if (error?.response?.status === 401 && !config._retry) {
       config._retry = true;
       try {
-        // refresh accessToken via refreshToken cookie
         const response = await getNewAccessToken();
+        console.log(response, "response axios instanace");
 
         return instance(config); // retry original request
       } catch (refreshError) {

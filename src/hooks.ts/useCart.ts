@@ -1,6 +1,7 @@
 // hooks/useCart.ts
-import { useGetAllCartQuery } from "@/redux/api/cartApi";
+import { useCreateCartMutation, useGetAllCartQuery } from "@/redux/api/cartApi";
 import { useAppSelector } from "@/redux/hook";
+import { CartProduct, Product } from "@/types";
 import { useMemo } from "react";
 type CartItem = {
   price: number;
@@ -11,6 +12,24 @@ type CartItem = {
 
 export const useCart = () => {
   const accessToken = useAppSelector((state) => state.auth.accessToken);
+  const [createCart] = useCreateCartMutation();
+
+  const handleAddToCart = async (
+    product: Product,
+    selectedPrice?: number,
+    quantity: number = 1
+  ) => {
+    if (!accessToken) return;
+
+    const cartItem = {
+      productId: product.id,
+      productName: product.title,
+      price: selectedPrice ?? product.price, // ✅ use selectedPrice if provided
+      quantity, // ✅ use provided quantity or default 1
+    };
+
+    await createCart({ cartData: cartItem, accessToken });
+  };
 
   const {
     data: cartsData,
@@ -39,6 +58,7 @@ export const useCart = () => {
   const totalItems = cartItems.length;
 
   return {
+    handleAddToCart,
     cartItems,
     totalCount, // total quantity
     totalItems, // total unique items

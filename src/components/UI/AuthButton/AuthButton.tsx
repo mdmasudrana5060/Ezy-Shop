@@ -6,40 +6,33 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { clearAuth, setAccessToken } from "@/redux/slices/authSlice";
 import { Button } from "@mui/material";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import { useEffect, useState } from "react";
 
 const AuthButton = () => {
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
   const dispatch = useAppDispatch();
-  const accessToken = useAppSelector((state) => state.auth.accessToken);
-  const isAuthenticated = !!accessToken;
+  const { accessToken, isLoggedIn } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     const checkToken = async () => {
-      if (!accessToken) {
+      // Only try to refresh token on initial load (when both are null/false)
+      if (!accessToken && !isLoggedIn) {
         try {
           const res = await getNewAccessToken();
-
           const newToken = res?.data?.accessToken;
           if (newToken) {
             dispatch(setAccessToken(newToken));
-          } else {
-            dispatch(clearAuth());
           }
         } catch (err) {
-          dispatch(clearAuth());
-        } finally {
-          setLoading(false);
+          // Silently handle token refresh failures
         }
-      } else {
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     checkToken();
-  }, [accessToken, dispatch]);
+  }, [accessToken, isLoggedIn, dispatch]);
 
   const handleLogout = () => {
     logoutUser();
@@ -72,7 +65,7 @@ const AuthButton = () => {
 
   return (
     <>
-      {isAuthenticated ? (
+      {isLoggedIn ? (
         <Button
           sx={{
             ...baseButtonStyles,

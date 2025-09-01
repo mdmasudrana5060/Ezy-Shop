@@ -1,7 +1,7 @@
 // frontend/service/logoutUser.ts
-import { redirect } from "next/navigation";
 import { store } from "@/redux/store";
 import { clearAuth } from "@/redux/slices/authSlice";
+import { removeUser } from "../authService";
 
 export const logoutUser = async () => {
   try {
@@ -11,9 +11,15 @@ export const logoutUser = async () => {
     });
 
     store.dispatch(clearAuth());
+    await removeUser();
 
-    redirect("/");
+    // Use window.location for immediate redirect
+    window.location.href = "/";
   } catch (error) {
     console.error("Logout failed", error);
+    // Still clear auth state and redirect even if logout request fails
+    store.dispatch(clearAuth());
+    await removeUser();
+    window.location.href = "/";
   }
 };

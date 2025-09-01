@@ -8,8 +8,8 @@ import { useCart } from "@/hooks.ts/useCart";
 
 type QuantityBoxProps = {
   product: Product;
-  selectedOption: "cash" | "installment";
-  selectedPrice: number;
+  selectedOption?: "cash" | "installment";
+  selectedPrice?: number;
 };
 
 const QuantityBox = ({
@@ -18,7 +18,7 @@ const QuantityBox = ({
   selectedPrice,
 }: QuantityBoxProps) => {
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+  const { handleAddToCart } = useCart();
   const handleIncrement = () => setQuantity((q) => q + 1);
   const handleDecrement = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
@@ -106,7 +106,7 @@ const QuantityBox = ({
         </Link>
 
         <Button
-          onClick={() => addToCart(product, selectedPrice, quantity)}
+          onClick={() => handleAddToCart(product, selectedPrice, quantity)}
           sx={{
             backgroundColor: "blue",
             color: "white",

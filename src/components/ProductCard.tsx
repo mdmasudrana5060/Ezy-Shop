@@ -1,4 +1,5 @@
 import { useCart } from "@/hooks.ts/useCart";
+import { Product } from "@/types";
 import {
   Box,
   Button,
@@ -10,18 +11,8 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 
-const ProductCard = ({
-  product,
-}: {
-  product: {
-    id: string;
-    title: string;
-    description: string | undefined;
-    image: string;
-    price: number;
-  };
-}) => {
-  const { addToCart } = useCart();
+const ProductCard = ({ product }: { product: Product }) => {
+  const { handleAddToCart } = useCart();
   return (
     <Link href={`/products/${product.id}`} passHref legacyBehavior>
       <Box
@@ -72,15 +63,7 @@ const ProductCard = ({
             >
               Buy Now
             </Button>
-            <Button
-              size="small"
-              onClick={() => addToCart(product)}
-              // onClick={(e) => {
-              //   e.preventDefault();
-              //   e.stopPropagation();
-              //   // handle Add Cart
-              // }}
-            >
+            <Button size="small" onClick={() => handleAddToCart(product)}>
               Add Cart
             </Button>
           </CardActions>

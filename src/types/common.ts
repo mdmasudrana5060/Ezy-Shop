@@ -60,3 +60,11 @@ export type IGenericErrorMessage = {
   path: string | number;
   message: string;
 };
+export type CartProduct = {
+  id: string;
+  title: string;
+  description?: string;
+  image: string;
+  price: number;
+  quantity: 1;
+};

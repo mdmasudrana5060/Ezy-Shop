@@ -25,8 +25,7 @@ import { cookies } from "next/headers";
 //   return !!authToken;
 // };
 
-// ✅ Remove cookie
-// export const removeUser = async () => {
-//   const cookieStore = await cookies();
-//   cookieStore.delete(authKeys.accessToken);
-// };
+export const removeUser = async () => {
+  const cookieStore = await cookies();
+  cookieStore.delete(authKeys.refreshToken);
+};

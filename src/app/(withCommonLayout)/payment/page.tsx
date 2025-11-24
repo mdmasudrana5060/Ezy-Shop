@@ -1,74 +1,51 @@
 "use client";
 
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import ErrorIcon from "@mui/icons-material/Error";
-import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useCreateOrderMutation } from "@/redux/api/orderApi";
 
-interface PropTypes {
-  searchParams: { status: string };
-}
+const PaymentPage = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [createOrder] = useCreateOrderMutation();
+  const [orderData, setOrderData] = useState<any>(null);
 
-const PaymentStatusPage = ({ searchParams }: PropTypes) => {
-  const status = searchParams.status; // could be success, cancel, failed
+  useEffect(() => {
+    const data = searchParams.get("data");
+    if (data) setOrderData(JSON.parse(decodeURIComponent(data)));
+  }, [searchParams]);
 
-  let icon;
-  let title;
+  const handlePayment = async () => {
+    // simulate payment success (you’ll integrate gateway here)
+    const fakePaymentId = "BKASH123456"; // from gateway response
 
-  switch (status) {
-    case "success":
-      icon = <CheckCircleIcon sx={{ fontSize: "90px", color: "#23b93c" }} />;
-      title = "Payment Successful";
-      break;
-    case "cancel":
-      icon = <CancelIcon sx={{ fontSize: "90px", color: "#FF0000" }} />;
-      title = "Payment Cancelled";
-      break;
-    case "failed":
-      icon = <ErrorIcon sx={{ fontSize: "90px", color: "#FF0000" }} />;
-      title = "Payment Failed";
-      break;
-    default:
-      icon = null;
-      title = "Unknown Status!";
-  }
+    const newOrder = {
+      ...orderData,
+      paymentId: fakePaymentId,
+      status: "processing",
+    };
+
+    await createOrder(newOrder);
+
+    alert("Payment successful! Order placed.");
+    router.push("/order-success");
+  };
+
+  if (!orderData) return <div>Loading...</div>;
 
   return (
-    <Container>
-      <Box
-        sx={{
-          mx: "auto",
-          width: "100%",
-          maxWidth: 500,
-          borderRadius: 2,
-          boxShadow: 1,
-          py: 5,
-          px: 2,
-          mt: { xs: 5, md: 10 },
-        }}
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Complete Your Payment</h1>
+      <p>Total: {orderData.total}৳</p>
+      <p>Method: {orderData.paymentMethod}</p>
+      <button
+        onClick={handlePayment}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
       >
-        <Stack justifyContent="center" alignItems="center">
-          {icon}
-          <Typography variant="h5" my={2}>
-            {title}
-          </Typography>
-          {status === "success" && (
-            <Button size="small" variant="outlined">
-              <Link href="/dashboard/patient/appointments">
-                Go To Dashboard
-              </Link>
-            </Button>
-          )}
-          {status !== "success" && (
-            <Button size="small" variant="outlined">
-              <Link href="/doctors">Book Again</Link>
-            </Button>
-          )}
-        </Stack>
-      </Box>
-    </Container>
+        Pay Now
+      </button>
+    </div>
   );
 };
 
-export default PaymentStatusPage;
+export default PaymentPage;

@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import CustomForm from "@/components/Form/CustomForm";
 import CustomInput from "@/components/Form/CustomInput";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export const validationSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -26,13 +26,15 @@ export const validationSchema = z.object({
 const LoginPage = () => {
   const router = useRouter();
   const [error, setError] = useState("");
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
   const handleLogin = async (values: FieldValues) => {
     try {
       const res = await userLogin(values);
 
       if (res?.data?.accessToken) {
         toast.success("You logged in successfully");
-        router.push("/");
+        router.push(redirect);
       } else {
         setError(res.message);
       }

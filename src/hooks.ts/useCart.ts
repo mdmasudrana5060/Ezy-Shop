@@ -1,7 +1,11 @@
-// hooks/useCart.ts
-import { useCreateCartMutation, useGetAllCartQuery } from "@/redux/api/cartApi";
+import {
+  useCreateCartMutation,
+  useDeleteCartMutation,
+  useGetAllCartQuery,
+} from "@/redux/api/cartApi";
 import { useAppSelector } from "@/redux/hook";
-import { CartProduct, Product } from "@/types";
+import { Product } from "@/types";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 type CartItem = {
   price: number;
@@ -9,23 +13,29 @@ type CartItem = {
   productName: string;
   quantity: number;
 };
-
 export const useCart = () => {
   const accessToken = useAppSelector((state) => state.auth.accessToken);
   const [createCart] = useCreateCartMutation();
+  const [deleteCart] = useDeleteCartMutation();
+  const router = useRouter();
 
   const handleAddToCart = async (
     product: Product,
     selectedPrice?: number,
     quantity: number = 1
   ) => {
-    if (!accessToken) return;
+    if (!accessToken) {
+      router.push(
+        `/login?redirect=${encodeURIComponent(window.location.pathname)}`
+      );
+      return;
+    }
 
     const cartItem = {
       productId: product.id,
       productName: product.title,
-      price: selectedPrice ?? product.price, // ✅ use selectedPrice if provided
-      quantity, // ✅ use provided quantity or default 1
+      price: selectedPrice ?? product.price,
+      quantity,
     };
 
     await createCart({ cartData: cartItem, accessToken });
@@ -35,20 +45,29 @@ export const useCart = () => {
     data: cartsData,
     isLoading,
     error,
-  } = useGetAllCartQuery(accessToken, {
+  } = useGetAllCartQuery(accessToken as string, {
     skip: !accessToken || typeof accessToken !== "string",
   });
 
-  const cartItems = useMemo(() => {
-    if (!Array.isArray(cartsData)) return [];
+  const handleDeleteFromCart = async (cartId: string) => {
+    if (!accessToken) return;
+    const Id = cartsData?._id;
+    try {
+      await deleteCart({ cartId, accessToken, Id }).unwrap();
+    } catch (err) {
+      console.log("Delete failed:", err);
+    }
+  };
 
-    return cartsData.flatMap((cart) =>
-      cart.items.map((item: CartItem) => ({
-        ...item,
-        selected: true,
-        userId: cart.userId,
-      }))
-    );
+  // ✅ FIXED — cartsData is now a SINGLE OBJECT
+  const cartItems = useMemo(() => {
+    if (!cartsData || !cartsData.items) return [];
+
+    return cartsData.items.map((item: CartItem) => ({
+      ...item,
+      selected: true,
+      userId: cartsData.userId,
+    }));
   }, [cartsData]);
 
   const totalCount = useMemo(() => {
@@ -59,9 +78,10 @@ export const useCart = () => {
 
   return {
     handleAddToCart,
+    handleDeleteFromCart,
     cartItems,
-    totalCount, // total quantity
-    totalItems, // total unique items
+    totalCount,
+    totalItems,
     isLoading,
     error,
     rawData: cartsData,

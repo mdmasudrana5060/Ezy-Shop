@@ -1,21 +1,22 @@
 // authService.ts
-import axios from "axios";
-
 export const getNewAccessToken = async () => {
   try {
-    const hasRefreshToken = document.cookie.includes("refreshToken=");
-    if (!hasRefreshToken) {
-      return null; // not logged in → skip
-    }
-    const res = await axios.post(
+    const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/refresh-token`,
-      {},
       {
-        withCredentials: true,
+        method: "POST",
+        credentials: "include", // equivalent to withCredentials: true
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
 
-    return res.data;
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return await res.json();
   } catch (error) {
     console.error("Error refreshing token:", error);
     throw error;

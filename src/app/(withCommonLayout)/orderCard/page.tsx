@@ -1,129 +1,130 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import {
-  Box,
-  Typography,
-  Paper,
-  Button,
-  Divider,
-  Grid,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import { useGetAllCartQuery } from "@/redux/api/cartApi";
+import { useAppSelector } from "@/redux/hook";
+import PaymentMethods from "./paymentMethod";
+import ItemList from "./itemList";
+import Summary from "./summary";
+import { useEffect, useState } from "react";
 import UserCard from "@/components/UserCard";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import DeliveryOptions from "./deliveryOptions";
 
-const OrderCard = () => {
+type TUser = {
+  name: string;
+  email: string;
+  contactNumber: string;
+  address: string;
+};
+
+const OrderPage = () => {
+  const [user, setUser] = useState<TUser>({
+    name: "",
+    email: "",
+    contactNumber: "",
+    address: "",
+  });
+
+  const [items, setItems] = useState([]);
   const [location, setLocation] = useState("Inside Dhaka");
   const [deliveryOption, setDeliveryOption] = useState("");
+  const [paymentOption, setPaymentOption] = useState("");
+  const [paymentId] = useState();
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const accessToken = useAppSelector((state) => state.auth.accessToken);
 
-  const productName = searchParams.get("name") ?? "Unknown";
-  const quantity = parseInt(searchParams.get("quantity") ?? "0", 10);
-  const price = parseFloat(searchParams.get("price") ?? "0");
-  const deliveryFee = parseInt(deliveryOption) || 0;
-  const total = (price * quantity + deliveryFee).toFixed(2);
+  const { data: cartsData, isLoading } = useGetAllCartQuery(
+    accessToken as string,
+    {
+      skip: !accessToken,
+    }
+  );
 
-  const confirmOrder = () => {
-    alert(`Order confirmed!\n${productName} x${quantity} = $${total}`);
-  };
+  useEffect(() => {
+    if (cartsData && cartsData.length > 0) {
+      const [{ name, email, contactNo, address, items }] = cartsData;
+
+      setUser({
+        name: name ?? "",
+        email: email ?? "",
+        contactNumber: contactNo ?? "",
+        address: address ?? "",
+      });
+
+      setItems(items);
+    }
+  }, [cartsData]);
+  console.log(user, "user from ordercard page");
+  console.log(items, "items from ordercard page");
+
+  if (isLoading) return <p>Loading...</p>;
+
+  if (!items.length) {
+    return (
+      <Box className="p-4 text-center">
+        <h2 className="text-xl font-semibold">Your cart is empty</h2>
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ p: 2, backgroundColor: "#f0f2f5" }}>
-      <Grid spacing={3} container>
-        {/* UserCard Section (8 columns on md+, full width on mobile) */}
+    <Box className="p-4">
+      <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <Paper elevation={6} sx={{ p: 3, bgcolor: "white" }}>
+          <Box
+            sx={{
+              p: 3,
+              bgcolor: "white",
+              mb: 3,
+              boxShadow: 3,
+              borderRadius: 2,
+            }}
+          >
             <UserCard
-              name=""
-              number=""
-              email=""
-              address=""
+              user={user}
+              setUser={setUser}
               location={location}
               setLocation={setLocation}
             />
-          </Paper>
+          </Box>
+
+          <Box sx={{ mb: 3 }} mt={3}>
+            <DeliveryOptions
+              location={location}
+              deliveryOption={deliveryOption}
+              setDeliveryOption={setDeliveryOption}
+            />
+          </Box>
         </Grid>
 
-        {/* Order Summary Section (4 columns on md+, full width on mobile) */}
-
         <Grid item xs={12} md={4}>
-          <Paper elevation={6} sx={{ p: 3, mb: 2, bgcolor: "white" }}>
-            <FormControl>
-              <FormLabel>Delivery Options</FormLabel>
-              <RadioGroup
-                value={deliveryOption}
-                onChange={(e) => setDeliveryOption(e.target.value)}
-              >
-                {location === "Inside Dhaka" ? (
-                  <>
-                    <FormControlLabel
-                      value="70৳"
-                      control={<Radio />}
-                      label="Inside Dhaka - 70৳"
-                    />
-                    <FormControlLabel
-                      value=" 0৳"
-                      control={<Radio />}
-                      label="Pickup From Hub - 0৳"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <FormControlLabel
-                      value="120৳"
-                      control={<Radio />}
-                      label="Outside Dhaka - 120৳"
-                    />
-                    <FormControlLabel
-                      value="30৳"
-                      control={<Radio />}
-                      label="Outside Pickup - 30৳"
-                    />
-                  </>
-                )}
-              </RadioGroup>
-            </FormControl>
-          </Paper>
-          <Paper elevation={6} sx={{ p: 3, bgcolor: "white" }}>
-            <Box sx={{ width: "100%" }}>
-              <Typography variant="h6" fontWeight="bold">
-                {productName}
-              </Typography>
-              <Divider sx={{ my: 1 }} />
-              <Typography>Quantity: {quantity}</Typography>
-              <Divider sx={{ my: 1 }} />
-              <Typography>
-                Unit Price: {price.toFixed(2)} <span>৳</span>
-              </Typography>
-              <Divider sx={{ my: 1 }} />
-              <Typography>Delivery Fee:{deliveryOption}</Typography>
-              <Divider sx={{ my: 1 }} />
-              <Typography fontWeight="bold" mt={1}>
-                Total: {total} <span style={{ fontWeight: 600 }}>৳</span>
-              </Typography>
+          <Box sx={{ mb: 3 }}>
+            <PaymentMethods
+              paymentOption={paymentOption}
+              setPaymentOption={setPaymentOption}
+            />
+          </Box>
 
-              <Box mt={3} display="flex" gap={1} justifyContent="flex-end">
-                <Button variant="outlined" onClick={() => router.push("/cart")}>
-                  View Cart
-                </Button>
-                <Button variant="contained" onClick={confirmOrder}>
-                  Place Order
-                </Button>
-              </Box>
-            </Box>
-          </Paper>
+          <Box sx={{ mb: 3 }}>
+            <ItemList items={items} />
+          </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Summary
+              items={items}
+              deliveryOption={deliveryOption}
+              user={user}
+              location={location}
+              paymentOption={paymentOption}
+              paymentId={paymentId}
+              cartsData={cartsData}
+              accessToken={accessToken}
+            />
+          </Box>
         </Grid>
       </Grid>
     </Box>
   );
 };
 
-export default OrderCard;
+export default OrderPage;

@@ -1,58 +1,56 @@
+// cartApi.ts
+import { TCartResponse } from "@/types";
 import { tagTypes } from "../tag-types";
 import { baseApi } from "./baseApi";
-
-// Cart API Types
-type TMeta = {
-  page: number;
-  limit: number;
-  total: number;
-  totalPage: number;
-};
-
-type TCartItem = {
-  productId: string;
-  quantity: number;
-};
-
-type TCartResponse = {
-  data: TCartItem[];
-  meta?: TMeta;
-};
 
 // Cart API
 const cartApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     // Create a new cart item
-    createCart: build.mutation<
-      TCartResponse,
-      { cartData: TCartItem; accessToken: string }
-    >({
+    createCart: build.mutation({
       query: ({ cartData, accessToken }) => ({
         url: "/cart/create-cart",
         method: "POST",
-        data: { cart: cartData }, // ✅ here it's `data` since you use axios
+        data: cartData,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       }),
       invalidatesTags: [tagTypes.cart],
     }),
 
     // Get all cart items
-    getAllCart: build.query({
-      query: (accessToken) => {
+    getAllCart: build.query<TCartResponse[], string>({
+      query: (accessToken) => ({
+        url: "/cart",
+        method: "GET",
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      }),
+      providesTags: [tagTypes.cart],
+    }),
+
+    // Delete a cart item
+    deleteCart: build.mutation({
+      query: ({ cartId, accessToken, Id }) => {
+        console.log(cartId, accessToken, Id, "from cart Api");
         return {
-          url: `/cart/`,
-          method: "GET",
+          url: `/cart/${Id}/${cartId}`,
+          method: "DELETE",
           headers: {
             Authorization: `${accessToken}`,
           },
         };
       },
-      providesTags: [tagTypes.cart],
+      invalidatesTags: [tagTypes.cart],
     }),
   }),
 });
 
-export const { useCreateCartMutation, useGetAllCartQuery } = cartApi;
+export const {
+  useCreateCartMutation,
+  useGetAllCartQuery,
+  useDeleteCartMutation,
+} = cartApi;

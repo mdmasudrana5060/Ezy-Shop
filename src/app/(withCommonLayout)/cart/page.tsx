@@ -9,13 +9,13 @@ import {
   IconButton,
   Checkbox,
 } from "@mui/material";
-
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState, useEffect } from "react";
-
 import { useCart } from "@/hooks.ts/useCart";
+import { useAppSelector } from "@/redux/hook";
+import Link from "next/link";
 
 type TCart = {
   productId: string;
@@ -26,7 +26,9 @@ type TCart = {
 };
 
 const Page = () => {
-  const { cartItems, totalCount, isLoading } = useCart();
+  const accessToken = useAppSelector((state) => state.auth.accessToken);
+
+  const { cartItems, totalCount, isLoading, handleDeleteFromCart } = useCart();
   const [carts, setCarts] = useState(cartItems);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ const Page = () => {
   };
 
   const handleDelete = (id: string) => {
-    setCarts((prev) => prev.filter((cart) => cart.productId !== id));
+    handleDeleteFromCart(id);
   };
 
   const handleSelectAll = (checked: boolean) => {
@@ -185,15 +187,22 @@ const Page = () => {
               <Typography fontWeight="bold" mb={2}>
                 Total Price: ৳{totalPrice.toFixed(2)}
               </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                disabled={totalPrice === 0}
-                onClick={() => console.log("Proceed to checkout")}
+              <Link
+                href={{
+                  pathname: "/orderCard",
+                }}
+                passHref
+                legacyBehavior
               >
-                Proceed to Checkout
-              </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  disabled={totalPrice === 0}
+                >
+                  Proceed to Checkout
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </Grid>

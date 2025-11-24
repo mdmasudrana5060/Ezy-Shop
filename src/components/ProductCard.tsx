@@ -13,63 +13,61 @@ import Link from "next/link";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { handleAddToCart } = useCart();
+
   return (
-    <Link href={`/products/${product.id}`} passHref legacyBehavior>
+    <Card
+      sx={{
+        maxWidth: 345,
+        cursor: "pointer",
+        boxShadow: 12,
+        p: 2,
+        borderRadius: 5,
+        "&:hover": { boxShadow: 24 },
+      }}
+    >
+      {/* ✅ No <a> — pure MUI & Next.js compatible */}
       <Box
-        component="a"
+        component={Link}
+        href={`/products/${product.id}`}
         sx={{
           textDecoration: "none",
+          color: "inherit",
+          display: "block",
         }}
       >
-        <Card
+        <CardMedia
+          component="img"
+          alt="product image"
           sx={{
-            maxWidth: 345,
-            cursor: "pointer",
-            boxShadow: 12,
-            p: 2,
-            borderRadius: 5,
-            "&:hover": { boxShadow: 24 },
+            height: 260,
+            width: "100%",
+            objectFit: "contain",
           }}
-        >
-          <CardMedia
-            component="img"
-            alt="product image"
-            sx={{
-              height: 260,
-              width: "100%",
-              objectFit: "contain",
-            }}
-            image={product.image}
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h6" component="div">
-              {product.title}
-            </Typography>
-            <Typography gutterBottom variant="h6" component="div">
-              <span>{product.price}</span>
-              <span style={{ color: "red", fontWeight: 600, marginLeft: 8 }}>
-                ৳
-              </span>
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button
-              size="small"
-              // onClick={(e) => {
-              //   e.preventDefault();
-              //   e.stopPropagation();
-              //   // handle Buy Now
-              // }}
-            >
-              Buy Now
-            </Button>
-            <Button size="small" onClick={() => handleAddToCart(product)}>
-              Add Cart
-            </Button>
-          </CardActions>
-        </Card>
+          image={product.image}
+        />
+        <CardContent>
+          <Typography gutterBottom variant="h6" component="div">
+            {product.title}
+          </Typography>
+          <Typography gutterBottom variant="h6" component="div">
+            <span>{product.price}</span>
+            <span style={{ color: "red", fontWeight: 600, marginLeft: 8 }}>
+              ৳
+            </span>
+          </Typography>
+        </CardContent>
       </Box>
-    </Link>
+
+      <CardActions>
+        <Button size="small" onClick={() => handleAddToCart(product)}>
+          Buy Now
+        </Button>
+        <Button size="small" onClick={() => handleAddToCart(product)}>
+          Add Cart
+        </Button>
+      </CardActions>
+    </Card>
   );
 };
+
 export default ProductCard;

@@ -68,3 +68,35 @@ export type CartProduct = {
   price: number;
   quantity: 1;
 };
+
+export type TCartProduct = {
+  productId: string;
+  productName: string;
+  price: number;
+  quantity: number;
+};
+
+// Full Cart object (per user)
+export type TCart = {
+  userId: string;
+  name: string;
+  email: string;
+  contactNo: string;
+  address: string;
+  items: TCartProduct[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+// Response type
+export type TCartResponse = {
+  data: TCart[];
+  meta?: TMeta;
+};
+
+// Optional meta (if backend supports pagination)
+export type TMeta = {
+  total: number;
+  page: number;
+  limit: number;
+};
